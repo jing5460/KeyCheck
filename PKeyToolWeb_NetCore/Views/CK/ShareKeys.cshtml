@@ -1,0 +1,147 @@
+﻿@model PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+@using System.Xml
+@using PKeyToolWeb_NetCore.Models.PKeyModel
+@using System.Xml.Serialization
+@using static PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+
+@{
+
+}
+<html>
+<head>
+    <link type="text/css" href="/css/PageCSS_ShareKeys.css" rel="stylesheet" />
+    <link type="text/css" href="/css/PageCSS_UniStyle.css" rel="stylesheet" />
+    <script type="text/javascript" src="/js/PageJS1.js"></script>
+    <script type="text/javascript" src="/lib/qrcode/qrcode.min.js"></script>
+</head>
+<body>
+
+    <div class="TopPanel">
+        <h2>使用说明：</h2>
+        <p>
+            本页面是一个公开的密钥分享平台，您可以直接获取资源，也可以热心分享资源。这里为所有人提供方便，是一个非常好的资源共享平台。<br />
+            如果要分享，请点击页面顶部导航栏最左侧的Logo返回到主页进行检测密钥，有效后方可进行分享，非常感谢您的热心分享！<br />
+            如果您在转发资源的时候，请务必在发布者一栏注明出处，为尊重资源发布者。请勿发布会侵害他人权益的资源，产生的后果我们平台对此不负责任。<br />
+            如果您想要更新密钥的状态，请点击重新检测，本站不会自动更新密钥的次数或错误码。如果您发现该密钥无效/有错误/有问题等，或者发现您的资源被泄露，请点击报告问题给我们发送反馈。<br />
+            点击二维码按钮会生成一个关于当前密钥信息的二维码，您可以使用任何扫码工具来快速的在其他设备上显示。单击页面任意区域即可移除展示的二维码。<br />
+            本站欢迎被索引，但请注明本站，如果遇到恶意爬取等情况，将采取相关措施，谢谢合作！<br />
+            <!--            您在重新检测密钥时，会受到首页“更多选项”下面的复选框的条件约束，你可以根据需要勾选或不勾选相应的复选框。<br />-->
+            <br />
+        </p>
+        <h4>没有找到你想要的资源？请加群试试看。群号见关于页面里的TG群或QQ群，欢迎您的加入。</h4>
+    </div>
+
+    @{
+        //自行编写分页逻辑，以下代码仅供参考。
+        int CurrentPage = 1;
+        string FirstPageTag = CurrentPage<2 ? "none" : "auto";
+        string LastPageTag = CurrentPage>=1 ? "none" : "auto";
+
+        string PNLCurrentSelected = "";
+        string SearchValueText = "";
+    }
+
+    <div class="ContentPanel">
+        <div>
+            <form asp-action="ShareKeys" method="post">
+                <select id="PNameList" name="q" class="PNameList hover-lightblue focus-lightskyblue">
+                    <option value="">不进行筛选</option>
+                    @foreach (SharedKeyIfm sharedKeyIfm in Model.SharedKeyIfmList)
+                    {
+                        string tcontent = "【"+sharedKeyIfm.Count+"枚】 "+sharedKeyIfm.ProductName;
+                        <option value="@sharedKeyIfm.ProductName">@tcontent</option>
+                    }
+                </select>
+                <input id="CKeyListFBtn" class="hover-lightblue focus-lightskyblue" asp-route-skptype="1" asp-route-qtype="0" type="submit" value="筛选" />
+            </form>
+        </div>
+        <div>
+            <form asp-action="ShareKeys" method="post">
+                <input class="CKListSearchTb hover-lightyellow focus-white " name="q" type="text" placeholder="搜索..." value="@SearchValueText" />
+                <input id="clearBtn" class="clearBtn hover-lightyellow focus-white" type="button" value="x" onclick="SKSearchClearBtn()" />
+                <input id="CKListSearchBtn" class="hover-lightyellow focus-white" asp-route-skptype="1" asp-route-qtype="1" type="submit" value="搜索" />
+            </form>
+        </div>
+        <script type="text/javascript">
+            document.getElementById("PNameList").value = "@PNLCurrentSelected";
+        </script>
+    </div>
+
+    <div class="CKeyListPanel">
+        <div>
+            <input id="RefreshListBtn" class="RefreshListBtn hover-palegreen focus-white" type="button" onclick="location.href='/CK/ShareKeys';" />
+</div>
+        <div class="CKeyListBtn">
+            <form action="ShareKeys" method="post">
+                <input id="CKeyListFP" class="hover-lightpink focus-lightpink" asp-route-skptype="1" type="submit" value="首页" style="pointer-events:@FirstPageTag;" />
+                <input asp-route-skptype="3" id="CKeyListUP" class="hover-lightblue focus-lightskyblue" type="submit" value="上一页" style="pointer-events:@FirstPageTag;" />
+                <input name="pagenum" id="CKeyListPNBtn" class="hover-lightyellow focus-white" style="width:50px;outline: none;padding-left: 5px;" type="number" value="@Context.Session.GetInt32("SKTempCurrentIndex")" />
+                <input type="submit" id="CKeyListSubBtn" class="hover-lightyellow focus-white" value="跳转" />
+                <input asp-route-skptype="4" id="CKeyListDP" class="hover-lightblue focus-lightskyblue" type="submit" value="下一页" style="pointer-events:@LastPageTag;" />
+                <input id="CKeyListLP" class="hover-lightpink focus-lightpink" asp-route-skptype="2" type="submit" value="末页" style="pointer-events:@LastPageTag;" />
+            </form>
+        </div>
+    </div>
+
+    <div id="KeyList" class="ScrollbarStyle">
+        <h4 style="margin:10px;">更多选项：</h4>
+        <div class="skoptionpanel">
+            <div style="display:flex;">
+                <input id="sk_coOEM" type="checkbox" />
+                <p class="odesc">尝试检测OEM密钥的剩余次数</p>
+            </div>
+        </div>
+        @foreach (SharedKey sharedKeyItem in Model.SKList)
+        {
+/*
+                <table class="ShowKStyle">
+                <tr style="height: 60px;">
+                <td class="skg1">
+                <p class="ShowKTittle">Key：</p>
+                <p class="skrecheckkey">@sharedKeyItem.A</p>
+                </td>
+                <td>
+                <p class="ShowKTittle">可用次数/错误码：</p>
+                <p class="skrecheckcount">@sharedKeyItem.D</p>
+                </td>
+                </tr>
+                <tr style="height: 100px;">
+                <td class="skg2" colspan="2">
+                <p class="ShowKTittle">产品名称：</p>
+                <h3 class="PNStyle skrecheckPN">@sharedKeyItem.C</h3>
+                </td>
+                </tr>
+                <tr style="height:80px;">
+                <td class="skg3">
+                <p class="ShowKTittle">分享人：</p>
+                <p>@sharedKeyItem.Body</p>
+                </td>
+                <td>
+                <p class="ShowKTittle">分享时间：(GMT+8)</p>
+                <p>@sharedKeyItem.Time</p>
+                </td>
+                </tr>
+
+                <!--按钮-->
+                <tr>
+                <td colspan="2">
+                <div style="display:flex;">
+                <input class="RecheckBtn hover-deepskyblue focus-white" type="button" value="重新检测" onclick="SKRecheckFunc('@sharedKeyItem.A')"/>
+                <input class="QRCodeBtn hover-lightyellow focus-white" type="button" value="二维码" onclick="SKQRCodeFunc('@sharedKeyItem.A')" />
+                <input class="ReportBtn hover-hotpink focus-white" type="button" value="报告" onclick="window.open('https://github.com/FHWWC/KeyCheck/issues');" />
+                </div>
+                </td>
+                </tr>
+                </table>
+                */
+
+        }
+   
+    </div>
+
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+</html>

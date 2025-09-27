@@ -1,0 +1,57 @@
+﻿@model PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+@using System.Xml
+@using PKeyToolWeb_NetCore.Models.PKeyModel
+@using System.Xml.Serialization
+@using static PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+
+@{
+
+}
+<html>
+<head>
+    <link type="text/css" href="/css/PageCSS_Privacy.css" rel="stylesheet" />
+    <link type="text/css" href="/css/PageCSS_UniStyle.css" rel="stylesheet" />
+    <script type="text/javascript" src="/js/PageJS1.js"></script>
+</head>
+<body>
+    <div class="TopPanel">
+        <div class="aboutCenter">
+            <img class="aboutIcon" src="/img/PKLogo.png" />
+            <p>PKeyToolWeb</p>
+        </div>
+
+        <h2>关于本站</h2>
+        <p>
+            PKeyTool是一个微软产品相关的工具，PKeyToolWeb是其网页版。它提供微软产品下载安装激活一条龙服务，您可以进行密钥检测、密钥分享、原版产品下载以及查看安装技巧和激活帮助等等。<br />
+            本站是一个内容丰富的资源型网站。主旨是为大家提供方便，完全免费，能帮助更多人是我们希望看到的。我为人人，人人为我。<br />
+            如果您有任何疑问，意见，或问题反馈等等，请联系我们，我们将会及时回复您。联系方式在下面，您可以根据需要选择联系方式。
+        </p>
+
+        <div class="teamIfm">
+            <img class="teamIcon" src="/img/TeamIMG.png" />
+            <h4 style="margin: -30px 0 0 10px;">FC Dev Team</h4>
+        </div>
+
+        <div class="LinkPanel">
+            <input id="Link_GithubBtn" class="hover-lightyellow focus-white" value="项目GitHub" type="button" onclick="location.href='https://github.com/FHWWC/KeyCheck';" />
+            <input id="Link_MailBtn" class="hover-lightyellow focus-white" value="发送邮件" type="button" onclick="location.href='mailto:justineedyoumost@163.com';" />
+            <input id="Link_GroupBtn" class="hover-lightyellow focus-white" value="我们的群组" type="button" onclick="CopyGroup()" />
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        function CopyGroup() {
+            var newTB = document.createElement("textarea");
+            newTB.value = "QQ群：【1群】799132569 【2群】750188479 【3群】130952063 \n\nTelegram：t.me/pkeytools";
+            document.body.appendChild(newTB);
+
+            newTB.select();
+            document.execCommand("copy");
+
+            document.body.removeChild(newTB);
+            alert("已将群组复制到剪贴板。Groups Copied");
+        }
+    </script>
+</body>
+</html>

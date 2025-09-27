@@ -1,0 +1,47 @@
+﻿@model PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+@using System.Xml
+@using PKeyToolWeb_NetCore.Models.PKeyModel
+@using System.Xml.Serialization
+@using static PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+
+@{
+
+}
+<html>
+<head>
+    <link type="text/css" href="/css/PageCSS_DataQuery.css" rel="stylesheet" />
+    <link type="text/css" href="/css/PageCSS_UniStyle.css" rel="stylesheet" />
+    <script type="text/javascript" src="/js/PageJS1.js"></script>
+</head>
+<body>
+    <div class="TopPanel">
+        <h3>被封密钥查询</h3>
+
+        <div class="SearchPanel">
+            <input id="BlockedKeyTb" class="hover-lightyellow focus-white" type="text" placeholder="请输入搜索内容(至少3个字符)" />
+            <input id="DQBlockedKeyBtn" class="hover-lightblue focus-lightblue" type="button" value="查询" onclick="DQBlockedKeyFunc()"/>
+        </div>
+
+        <div id="BKMsgPanel" class="alert d-none"></div>
+
+        <div class="TablePanel">
+            <table id="BKResultTable" class="table table-striped table-bordered table-hover table-sm">
+                <thead style="background-color:lightblue;">
+                    <tr>
+                        <th>密钥</th>
+                        <th>产品名称</th>
+                        <th>首次检测时间</th>
+                        <th>最后检测时间</th>
+                    </tr>
+                </thead>
+                <tbody/>
+            </table>
+            <h5 id="BKQueryCountTb"/>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+</html>

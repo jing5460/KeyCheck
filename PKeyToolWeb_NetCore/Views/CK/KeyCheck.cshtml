@@ -1,0 +1,242 @@
+﻿@using System.Xml
+@using PKeyToolWeb_NetCore.Models.PKeyModel
+@using System.Xml.Serialization
+@using static PKeyToolWeb_NetCore.Models.PKeyModel.PKeyConfigModel
+@using static PKeyToolWeb_NetCore.Models.PKeyModel.AllViewModel
+
+@{
+    var rootPath = Directory.GetCurrentDirectory()+"/wwwroot/";
+    var pkconfigPath = rootPath + "config/PkeyData.xml";
+
+    //给各个checkbox赋值
+    int co_OEM = Context.Session.GetInt32("CheckOptionOEM") is null ? 0 : (int)Context.Session.GetInt32("CheckOptionOEM");
+    int co_SkipBlockDB = Context.Session.GetInt32("SkipBlockDBCheck") is null ? 0 : (int)Context.Session.GetInt32("SkipBlockDBCheck");
+    int co_GetSimp = Context.Session.GetInt32("GetSimpIfm") is null ? 0 : (int)Context.Session.GetInt32("GetSimpIfm");
+    int co_MAKCode = Context.Session.GetInt32("CheckMAKErrorCode") is null ? 0 : (int)Context.Session.GetInt32("CheckMAKErrorCode");
+
+
+}
+<html>
+<head>
+    <link type="text/css" href="/css/PageCSS_KeyCheck.css" rel="stylesheet" />
+    <link type="text/css" href="/css/PageCSS_UniStyle.css" rel="stylesheet" />
+    <script type="text/javascript" src="/js/PageJS1.js"></script>
+</head>
+<body>
+    <div style="height: 100%; width: auto; margin: 0 50px; margin-top: -10px; padding-top: 10px;">
+        <div id="TipBKG" class="TipBKG" style="display:none;"></div>
+        <div id="TopBkg" style="display:none;" class="TopBKG2">
+            <h3 style="margin-top: 10px;">提示信息</h3>
+            <div class="ConnPanel">
+                <img style="float: left;" src="/img/Tips.png" width="300" height="300" />
+                <h3 id="TopBkgText" class="TopBkgText"/>
+            </div>
+            <div id="SettingPanel" class="SettingPanel" style="display:none;">
+                <p>请输入您的名称，这将会显示到密钥分享者一栏。名称长度不能超过20，如空白则使用随机名称。</p>
+                <input type="text" id="ShareNameT" class="hover-lightyellow focus-white" />
+            </div>
+            <div class="ConnPanel2">
+                <input type="button" id="BOKBtn" class="BOKBtn hover-lightyellow focus-white" onclick="BOKBtnFunc()" />
+                <input type="button" style="display:none;" id="BCancelBtn" class="BCancelBtn hover-lightyellow focus-white" onclick="BCancelBtnFunc()" />
+            </div>
+        </div>
+        <table style="margin: 0 auto;">
+            <tr class="inputStyle">
+                <td>
+                    <div class="TUnderline">
+                        <input id="keybox" class="keybox hover-lightyellow focus-white" type="text" placeholder="Product Key" style="background-color: lightyellow;" onfocus="keyboxF()" onblur="keyboxB()" />
+                    </div>
+                    <input id="clearBtn" class="clearBtn hover-lightyellow focus-white" type="button" value="x" onclick="CheckClearBtn()" />
+                </td>
+                <td>
+                    <input type="button" id="submit" class="hover-lightyellow focus-white" value="开始检测" style="margin-left: 20px; background-color: lightyellow;" onclick="CheckKeys()" />
+                </td>
+            </tr>
+            <tr>
+                <td class="optionTD">
+                    <div id="optionPanel" class="optionPanel" style="display: none; margin: 10px;">
+                        <h3>选择证书：</h3>
+
+                        <select id="ConfigList" class="ConfigList hover-lightblue focus-lightskyblue">
+                            <option value="0" selected>遍历所有证书</option>
+                            @{
+                                try
+                                {
+                                    PkeyData pkconfigModel = (PkeyData)new XmlSerializer(typeof(PkeyData)).Deserialize(new StringReader(System.IO.File.ReadAllText(pkconfigPath)));
+
+                                    if (pkconfigModel!=null)
+                                    {
+                                        var configTypes = pkconfigModel.ConfigTypes;
+                                        for (int i = 0; i <pkconfigModel.ConfigTypes.Count; i++)
+                                        {
+                                            <option value="@configTypes[i].ConfigID">@configTypes[i].ConfigName</option>
+                                        }
+                                    }
+                                }
+                                catch(Exception)
+                                {
+
+                                }
+                            }
+                        </select>                               
+
+                        <h3 style="margin-top: 40px;">条件选择：</h3>
+                        <table class="coTable">
+                            <tr>
+                                <td>
+                                    <input id="coOEM" type="checkbox"/>
+                                </td>
+                                <td>
+                                    <p>尝试检测OEM密钥的次数，前提是此OEM密钥支持计数</p>
+                                    <p class="opsm">仅限OEM。</p>
+                                </td>
+                            </tr>
+<!--
+                                                            <tr>
+                                                            <td>
+                                                                <input id="coError" type="checkbox" checked="checked" disabled="disabled" />
+                                                            </td>
+                                                            <td>
+                                                                <p>#暂不开启#不检测密钥的错误代码</p>
+                                                                <p class="opsm">仅限Retail/OEM。</p>
+                                                            </td>
+                                                        </tr>
+-->
+                            <tr>
+                                <td>
+                                    <input id="coMAKCode" type="checkbox" />
+                                </td>
+                                <td>
+                                    <p>检测MAK密钥的错误代码，适用于一些必须通过错误代码才能判定是否有效的MAK</p>
+                                    <p class="opsm">仅限MAK。</p>
+                                    <p class="opsm">注意：在线密钥每检测一次错误代码就会耗费一次实际激活次数！介意请勿勾选！</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="coValid" type="checkbox"  />
+                                </td>
+                                <td>
+                                    <p>检测时不通过已封密钥数据库查询其是否被封，适用于检测复活的密钥，不建议非MAK密钥勾选此项</p>
+                                    <p class="opsm">为了节省资源并加快检测，建议不勾选此选项。</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="coSimp" type="checkbox" />
+                                </td>
+                                <td>
+                                    <p>只获取密钥的信息，不检测次数或错误码</p>
+                                    <p class="opsm">如勾选此项，则选项1和2将不会起作用。</p>
+                                </td>
+                            </tr>
+                        </table>
+                        <script type="text/javascript">
+                            document.getElementById("coOEM").checked = @co_OEM;
+                            document.getElementById("coMAKCode").checked = @co_MAKCode;
+                            document.getElementById("coValid").checked = @co_SkipBlockDB;
+                            document.getElementById("coSimp").checked = @co_GetSimp;
+                        </script>
+
+                        <br />
+                        <p>如果您觉得应该能正常检测出来，但网站却提示“密钥和证书不匹配”，请您联系我们，我们会排查并解决问题。</p>
+                        <p>pidgenx.dll 版本：22449.1</p>
+                        <p>xrm-ms 最新版本：22449</p>
+                        <p>证书列表更新日期：2024/10/30 20:40</p>
+                    </div>
+                </td>
+                <td class="RightBtn">
+                    <input id="MoreBtn" class="MoreBtn hover-lightblue focus-lightskyblue" type="button" value="更多选项" onclick="CheckMoreBtn()" />
+                    <input type="button" id="ShareBtn" class="ShareBtn hover-lightyellow focus-white" onclick="ShareKeyBtn()" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="div1">
+        <p>
+            支持检测多个密钥，单次上限50个，注意数量越多越占CPU且耗时越长。较早版本产品的key检测时可能比较慢，是因为程序需要读取证书内数据，请耐心等待。
+            <br />
+            错误代码检测支持 Win8/Office2013 及以上的版本，而它以下的版本暂不支持。
+            <br />
+            如您有任何想要反馈的，请猛戳网页底部的“意见反馈”，打工人纯为爱发电，空闲时间有限，请勿催更，感谢您的支持！
+        </p>
+
+        <div class="rcBtn">
+            <input type="button" class="hover-lightpink focus-white" value="复制全部" onclick="CopyResult()" />
+            <input type="button" class="hover-lightpink focus-white" value="复制简短" onclick="CopySimpResult()" />
+        </div>
+        <table id="ResultTable">
+            <tr>
+                <td>PKey Config</td>
+                <td>
+                    <input id="KeyConfig" class="KeyConfig" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>产品名称</td>
+                <td>
+                    <input id="KeyProduN" class="KeyProduN" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>Edition ID</td>
+                <td>
+                    <input id="KeyEdition" class="KeyEdition" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>ePID</td>
+                <td>
+                    <input id="ePID" class="ePID" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>产品ID</td>
+                <td>
+                    <input id="ProductID" class="ProductID" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>SKU ID</td>
+                <td>
+                    <input id="KeySKU" class="KeySKU" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>授权类型</td>
+                <td>
+                    <input id="LicenseType" class="LicenseType" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>授权通道</td>
+                <td>
+                    <input id="LicenseChannel" class="LicenseChannel" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>Part Number</td>
+                <td>
+                    <input id="PartNum" class="PartNum" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p class="countStyle">可用次数/错误代码</p>
+                </td>
+                <td>
+                    <input id="ActiveCount" class="ActiveCount" readonly="readonly" />
+                </td>
+            </tr>
+        </table>
+        <textarea id="CKResult" class="hover-lightblue focus-white" wrap="hard" readonly="readonly"></textarea>
+
+        <div style="margin-top: 20px; margin-left: 50px;">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+</html>

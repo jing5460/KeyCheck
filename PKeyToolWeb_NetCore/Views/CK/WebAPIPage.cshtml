@@ -1,0 +1,294 @@
+﻿@model PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+@using System.Xml
+@using PKeyToolWeb_NetCore.Models.PKeyModel
+@using System.Xml.Serialization
+@using static PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+
+@{
+
+}
+<html>
+<head>
+    <link type="text/css" href="/css/PageCSS_WebAPIPage.css" rel="stylesheet" />
+    <link type="text/css" href="/css/PageCSS_UniStyle.css" rel="stylesheet" />
+    <script type="text/javascript" src="/js/PageJS1.js"></script>
+</head>
+<body>
+    <div class="TopPanel">
+        <p class="APItittle">1.检测密钥</p>
+        <div class="SecTitleBorder">
+            <p class="APIDesp">描述：</p>
+            <p>请求方式：POST；   返回数据格式：XML;</p>
+        </div>
+        <div class="SecTitleBorder">
+            <p class="APIDesp">示例：</p>
+            <p>
+                示例1   https://pkeytool.com/api/CK?k=BBBBB-BBBBB-BBBBB-BBBBB-BBBBB
+                <br />
+                示例2   https://pkeytool.com/api/CK?k=BBBBB-BBBBB-BBBBB-BBBBB-BBBBB&coem=0&skipdb=0&getsimp=0&makcode=0&cindex=0
+            </p>
+        </div>
+        <div class="SecTitleBorder">
+            <p class="APIDesp">请求格式：</p>
+            <table id="APITable" class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>数据类型</th>
+                        <th>参数说明</th>
+                        <th>有效值</th>
+                        <th>是否可选</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>k</td>
+                        <td>string</td>
+                        <td>需要检测的密钥</td>
+                        <td>符合微软密钥组合规则的字符串</td>
+                        <td>否</td>
+                        <td>可添加多个，上限50个</td>
+                    </tr>
+                    <tr>
+                        <td>coem</td>
+                        <td>int</td>
+                        <td>尝试检测OEM密钥的次数</td>
+                        <td>
+                            0 (默认值)不检测<br />
+                            1 检测
+                        </td>
+                        <td>是</td>
+                        <td>前提是此OEM密钥支持计数</td>
+                    </tr>
+                    <tr>
+                        <td>skipdb</td>
+                        <td>int</td>
+                        <td>不通过已封密钥数据库查询密钥是否被封</td>
+                        <td>
+                            0 (默认值)通过<br />
+                            1 不通过
+                        </td>
+                        <td>是</td>
+                        <td>
+                            适用于检测复活的密钥，不建议非MAK密钥传1<br />
+                            为了节省资源并加快检测，建议没有需求不要传1
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>getsimp</td>
+                        <td>int</td>
+                        <td>只获取密钥的信息，不检测次数或错误码</td>
+                        <td>
+                            0 (默认值)否<br />
+                            1 是
+                        </td>
+                        <td>是</td>
+                        <td>如此项为1，则参数coem和makcode将不会起作用。</td>
+                    </tr>
+                    <tr>
+                        <td>makcode</td>
+                        <td>int</td>
+                        <td>检测MAK密钥的错误代码</td>
+                        <td>
+                            0 (默认值)不检测<br />
+                            1 检测
+                        </td>
+                        <td>是</td>
+                        <td>
+                            适用于一些必须通过错误代码才能判定是否有效的MAK<br />
+                            在线密钥不要传1，否则会耗费一次实际激活次数！
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>cindex</td>
+                        <td>int</td>
+                        <td>证书索引</td>
+                        <td>
+                            0 (默认值)遍历所有证书<br />
+                            或使用大于0的整数来指定某个证书
+                        </td>
+                        <td>是</td>
+                        <td>证书列表详见下方附录</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="SecTitleBorder">
+            <p class="APIDesp">返回格式：</p>
+            <pre id="APIReturnXMLPanel"></pre>
+            <table id="APITable" class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th>变量名称</th>
+                        <th>数据类型</th>
+                        <th>变量说明</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IsShowPopup</td>
+                        <td>bool</td>
+                        <td>是否成功获取到检测结果</td>
+                        <td>成功获取到结果，该值会返回False</td>
+                    </tr>
+                    <tr>
+                        <td>ShowMessage</td>
+                        <td>string</td>
+                        <td>返回的信息</td>
+                        <td>如果IsShowPopup为True，则这里会有返回的具体信息</td>
+                    </tr>
+                    <tr>
+                        <td>ProductKey</td>
+                        <td>string</td>
+                        <td>产品密钥</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>KeyConfig</td>
+                        <td>string</td>
+                        <td>密钥对应的证书</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>KeyProduN</td>
+                        <td>string</td>
+                        <td>产品名称</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>KeyEdition</td>
+                        <td>string</td>
+                        <td>Edition ID</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>ePID</td>
+                        <td>string</td>
+                        <td>EPID</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>ProductID</td>
+                        <td>string</td>
+                        <td>产品ID</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>KeySKU</td>
+                        <td>string</td>
+                        <td>SKU ID</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>LicenseType</td>
+                        <td>string</td>
+                        <td>授权类型</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>LicenseChannel</td>
+                        <td>string</td>
+                        <td>授权通道</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>PartNum</td>
+                        <td>string</td>
+                        <td>Part Num</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>ActiveCount</td>
+                        <td>string</td>
+                        <td>可用次数/错误代码</td>
+                        <td>获取不到激活信息以及该密钥就没有激活次数（例如KMS密钥），会返回"---"</td>
+                    </tr>
+                    <tr>
+                        <td>CheckResultModel</td>
+                        <td>CheckResultModel</td>
+                        <td>检测数据的类名</td>
+                        <td>包含了当前单个密钥的检测数据</td>
+                    </tr>
+                    <tr>
+                        <td>ArrayOfCheckResultModel</td>
+                        <td>List</td>
+                        <td>检测数据类的集合</td>
+                        <td>一个集合，内部包含若干个检测数据</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="TopPanel">
+        <p class="APItittle">附录</p>
+        <div class="SecTitleBorder">
+            <p class="APIDesp">证书列表：</p>
+            <table id="APITable" class="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名称</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>Windows 10 / WinSvr 16 - 19 / Build 19043</td></tr>
+                    <tr><td>2</td><td>Windows 11 / WinSvr vNext / Build 22449</td></tr>
+                    <tr><td>3</td><td>Windows 11 / WinSvr 19 - 22 / Build 20348</td></tr>
+                    <tr><td>4</td><td>Windows 10 / Build 19044</td></tr>
+                    <tr><td>5</td><td>Windows 10 / Build 17763</td></tr>
+                    <tr><td>6</td><td>Windows 10 / WinSvr 16 / Build 16299</td></tr>
+                    <tr><td>7</td><td>Windows 10 Old</td></tr>
+                    <tr><td>8</td><td>Windows 10 CSVLK</td></tr>
+                    <tr><td>9</td><td>Windows 8.1 / WinSvr 2012 R2 / WinEmbedded 8.1</td></tr>
+                    <tr><td>10</td><td>Windows 8.1 CSVLK</td></tr>
+                    <tr><td>11</td><td>Windows 8 / WinSvr 2012 / WinEmbedded 8</td></tr>
+                    <tr><td>12</td><td>Office 2019 + / 365</td></tr>
+                    <tr><td>13</td><td>Office 2016</td></tr>
+                    <tr><td>14</td><td>Office 2016 CSVLK</td></tr>
+                    <tr><td>15</td><td>Office 2013</td></tr>
+                    <tr><td>16</td><td>Office 2013 CSVLK</td></tr>
+                    <tr><td>17</td><td>Windows 7 / WinSvr 2008 R2</td></tr>
+                    <tr><td>18</td><td>Office 2010</td></tr>
+                    <tr><td>19</td><td>Windows Vista / WinSvr 2008</td></tr>
+                    <tr><td>20</td><td>Thin PC</td></tr>
+                    <tr><td>21</td><td>Windows PosReady 7</td></tr>
+                    <tr><td>22</td><td>VS 2019</td></tr>
+                    <tr><td>23</td><td>VS 2017</td></tr>
+                    <tr><td>24</td><td>VS 2015</td></tr>
+                    <tr><td>25</td><td>VS 2015 RC</td></tr>
+                    <tr><td>26</td><td>VS 2013</td></tr>
+                    <tr><td>27</td><td>VS 2012</td></tr>
+                    <tr><td>28</td><td>VS 2010</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        const txml=`                <ArrayOfCheckResultModel>
+                    <CheckResultModel>
+                        <IsShowPopup>false</IsShowPopup>
+                        <ProductKey>N3FQX-X346P-JB72G-9QCHF-8B883</ProductKey>
+                        <KeyConfig>Office 2019 + / 365</KeyConfig>
+                        <KeyProduN>Office24_ProPlus2024VL_MAK_AE2</KeyProduN>
+                        <KeyEdition>ProPlus2024Volume</KeyEdition>
+                        <ePID>03612-05026-380-189667-03-2052-19045.0000-2642025</ePID>
+                        <ProductID>00502-63801-89667-AA980</ProductID>
+                        <KeySKU>84e442c0-87a0-49b5-bcd1-b161b0b35e4b</KeySKU>
+                        <LicenseType>Volume:MAK</LicenseType>
+                        <LicenseChannel>ltMAK</LicenseChannel>
+                        <PartNum>X23-57848</PartNum>
+                        <ActiveCount>0</ActiveCount>
+                    </CheckResultModel>
+                    <CheckResultModel>
+                        ......
+                    </CheckResultModel>
+                </ArrayOfCheckResultModel>`;
+        document.querySelector("#APIReturnXMLPanel").textContent=txml;
+    </script>
+</body>
+</html>

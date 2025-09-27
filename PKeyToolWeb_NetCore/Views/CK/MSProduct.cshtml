@@ -1,0 +1,96 @@
+﻿@model PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+@using System.Xml
+@using PKeyToolWeb_NetCore.Models.PKeyModel
+@using System.Xml.Serialization
+@using static PKeyToolWeb_NetCore.Models.PKeyModel.AllModel
+
+@{
+    string offMacHTML = "";
+    try
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4412.3 Safari/537.36");
+            HttpResponseMessage responseMessage = await client.GetAsync("https://learn.microsoft.com/zh-cn/officeupdates/update-history-office-for-mac");
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                offMacHTML= await responseMessage.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                //MSMAC.Value="ERROR";
+            }
+
+        }
+    }
+    catch (Exception)
+    {
+        //MSMAC.Value="ERROR";
+    }
+}
+
+<html>
+<head>
+    <link type="text/css" href="/css/PageCSS_UniStyle.css" rel="stylesheet" />
+    <link type="text/css" href="/css/PageCSS_MSProduct.css" rel="stylesheet" />
+    <script type="text/javascript" src="/js/PageJS1.js"></script>
+    <script type="text/javascript" src="/js/PageJS2.js"></script>
+</head>
+<body>
+    <div class="TopPanel">
+        <h2>下载</h2>
+        <p>此页面获取的下载链接均为微软官方的直链，知识产权均属于微软公司。</p>
+        <table class="MSPCombo">
+            <tr>
+                <td style="width:150px;">
+                    <p>选择产品：</p>
+                    <select id="ProdSelect" class="PNameList hover-lightblue focus-lightskyblue" onchange="ProdSelectChanged()">
+                        <option>请选择</option>
+                        <option value="windows">Windows</option>
+                        <option value="office">Office</option>
+                        <option value="devtool">DevTools</option>
+                        <option value="edge">Edge</option>
+                    </select>
+                </td>
+                <td>
+                    <p>选择版本：</p>
+                    <select id="VerSelect" class="PNameList hover-lightblue focus-lightskyblue" onchange="VerSelectChanged()">
+                        <option>---</option>
+                    </select>
+                </td>       
+                <td style="width:200px;">
+                    <p>选择语言：</p>
+                    <select id="LangSelect" class="PNameList hover-lightblue focus-lightskyblue" onchange="LangSelectChanged()">
+                        <option>---</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <textarea id="ProdLinks" class="hover-lightblue focus-white" wrap="hard" readonly="readonly"></textarea>
+                </td>
+            </tr>
+            <tr>
+            </tr>
+        </table>
+    </div>
+
+    <div class="TopPanel">
+        <h2>更多资料</h2>
+        <div class="LinkPanel">
+            <input id="Link_MSISOBtn" class="hover-lightblue focus-lightblue" value="微软系统下载官网" type="button" onclick="location.href='https://www.microsoft.com/zh-cn/software-download/windows11';" />
+            <input id="Link_ProdDumpBtn" class="hover-lightblue focus-lightblue" value="TechBench Dump" type="button" onclick="location.href='https://techbench.betaworld.cn/';" />
+        </div>
+    </div>
+
+    <div id="OMacPanel">
+        <input id="offMacValue" style="display:none;" type="text" value="@offMacHTML" />
+    </div>
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+</html>
