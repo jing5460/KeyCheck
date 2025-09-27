@@ -1,0 +1,309 @@
+﻿.TopPanel {
+    backdrop-filter: blur(20px) brightness(160%) saturate(80%);
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 20px;
+}
+.qrcodepanel {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 90;
+    backdrop-filter: blur(10px) brightness(100%) saturate(80%);
+}
+#keyqrcode {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+#KeyList {
+    margin: 20px;
+    max-height: 1000px;
+    backdrop-filter: blur(20px) brightness(160%) saturate(80%);
+    border-radius: 5px;
+}
+
+.skoptionpanel {
+    margin: 10px;
+}
+
+    .skoptionpanel .odesc {
+        margin-left: 5px;
+    }
+
+.CKeyListPanel {
+    width: 100%;
+    margin-top: 20px;
+    position: relative;
+    display: flex;
+}
+
+    .CKeyListPanel input {
+        height: 30px;
+        margin-left: 20px;
+    }
+
+#RefreshListBtn {
+    height: 40px;
+    width: 40px;
+    background-image: url('/img/SRestoreBtn.png');
+    background-size: 30px;
+    background-position: 5px;
+    background-repeat: no-repeat;
+    background-color: lightgreen;
+}
+
+.CKeyListBtn {
+    margin: 5px auto 5px auto;
+    width: 50%;
+}
+
+#CKeyListFP, #CKeyListLP {
+    background-color: lightpink;
+}
+
+#CKeyListUP, #CKeyListDP {
+    background-color: lightblue;
+}
+
+#CKeyListPNBtn, #CKeyListSubBtn {
+    background-color: lightyellow;
+}
+
+.CKListSearchTb {
+    width: 300px;
+    height: 30px;
+    background-color: lightyellow;
+    outline: none;
+    border-radius: 3px 0 0 3px;
+}
+
+.clearBtn {
+    width: 20px;
+    height: 30px;
+    background-color: lightyellow;
+    border-radius: 0 3px 3px 0;
+    margin-left: -5px;
+}
+
+.ContentPanel {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 20px 0 20px;
+}
+
+.PNameList {
+    background-color: lightblue;
+    border: solid lightblue 4px;
+    outline: none;
+    max-width: 400px;
+}
+
+#CKeyListFBtn {
+    height: 30px;
+    width: 60px;
+    text-align: right;
+    margin-left: 10px;
+    background-image: url('/img/SFilterBtn.png');
+    background-size: 24px;
+    background-position: left;
+    background-repeat: no-repeat;
+    background-color: lightblue;
+}
+
+#CKListSearchBtn {
+    height: 30px;
+    width: 60px;
+    text-align: right;
+    margin-left: 10px;
+    background-image: url('/img/SSearchBtn.png');
+    background-size: 24px;
+    background-position: left;
+    background-repeat: no-repeat;
+    background-color: lightyellow;
+}
+
+input {
+    border: 0;
+    border-radius: 3px;
+}
+
+    input[type=checkbox] {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+        input[type=checkbox]:hover {
+            box-shadow: 0px 0px 3px 3px lightblue;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        }
+
+        input[type=checkbox]:after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: lightblue;
+            border-radius: 3px;
+        }
+
+        input[type=checkbox]:checked:after {
+            content: "";
+            background-image: url('/img/CheckedICON.png');
+            background-repeat: no-repeat;
+            background-size: 100%;
+            background-color: lightpink;
+            border: none;
+        }
+
+        input[type=checkbox]:checked:hover {
+            box-shadow: 0px 0px 3px 3px lightpink;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        }
+
+.ShowKStyle {
+    float: left;
+    background-color: lightblue;
+    /*
+        backdrop-filter: blur(20px) brightness(160%) saturate(80%);
+        -webkit-backdrop-filter: blur(20px) brightness(160%) saturate(80%);
+         */
+    border-radius: 10px;
+    height: 280px;
+    width: 440px;
+    margin: 10px;
+}
+
+    .ShowKStyle p {
+        font-size: 15px;
+    }
+
+    .ShowKStyle td {
+        vertical-align: top;
+        padding: 0 5px 0 5px;
+    }
+
+    .ShowKStyle .skg1 {
+        width: 320px;
+        border-right: solid 3px lightskyblue;
+    }
+
+    .ShowKStyle .skg2 {
+        border-top: solid 3px lightskyblue;
+        border-bottom: solid 3px lightskyblue;
+    }
+
+    .ShowKStyle .skg3 {
+        width: 120px;
+        border-right: solid 3px lightskyblue;
+    }
+
+.RecheckBtn {
+    height: 30px;
+    width: 200px;
+    background-image: url('/img/ReCKICON.png');
+    background-size: 24px;
+    background-position: 10px;
+    background-repeat: no-repeat;
+    background-color: skyblue;
+    float: left;
+}
+
+.QRCodeBtn {
+    height: 30px;
+    width: 140px;
+    background-image: url('/img/QRCodeICON.png');
+    background-size: 24px;
+    background-position: 10px;
+    background-repeat: no-repeat;
+    background-color: lightyellow;
+    margin-left: 5px;
+}
+
+.ReportBtn {
+    height: 30px;
+    width: 100px;
+    background-image: url('/img/ReportICON.png');
+    background-size: 24px;
+    background-position: 10px;
+    background-repeat: no-repeat;
+    background-color: lightpink;
+    margin-left: 5px;
+}
+
+.ShowKTittle {
+    font-size: 13px !important;
+    color: dodgerblue;
+    height: 10px;
+    font-weight: bold;
+}
+
+.PNStyle {
+    font-size: 1em;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow-wrap: break-word;
+    text-overflow: ellipsis;
+    margin-top: 5px;
+}
+
+.ListDataStyle {
+    position: absolute;
+    margin-top: -60px;
+}
+
+.naviBtn {
+    width: 40px;
+    height: 40px;
+    background-color: skyblue;
+    border-color: transparent;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.EditionBtn {
+    width: 45px;
+    height: 45px;
+    background-image: url('IMG/SFilterBtn.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: skyblue;
+    border-color: transparent;
+    border-radius: 5px;
+    margin-left: 10px;
+    margin-top: -3px;
+}
+
+.SearchBtn {
+    width: 45px;
+    height: 45px;
+    background-image: url('IMG/SSearchBtn.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: skyblue;
+    border-color: transparent;
+    border-radius: 5px;
+    margin-left: 10px;
+    margin-top: -3px;
+}
+
+.EditionList {
+    height: 40px;
+    width: 400px;
+    border-radius: 5px;
+    float: left;
+}
+
+.KeySearch {
+    width: 300px;
+    height: 35px;
+    float: left;
+    background-color: skyblue;
+    border-color: transparent;
+    border-radius: 5px;
+}

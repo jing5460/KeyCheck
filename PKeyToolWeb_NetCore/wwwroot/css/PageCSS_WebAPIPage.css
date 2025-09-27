@@ -1,0 +1,25 @@
+﻿.TopPanel {
+    backdrop-filter: blur(20px) brightness(160%) saturate(80%);
+    border-radius: 5px;
+    padding: 10px;
+    margin: 20px;
+}
+.SecTitleBorder {
+    border: solid deepskyblue 3px;
+    border-radius: 5px;
+    margin:10px 0;
+    padding:10px;
+}
+.APItittle {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.APIDesp {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#APITable {
+    border: solid 2px darkblue;
+}

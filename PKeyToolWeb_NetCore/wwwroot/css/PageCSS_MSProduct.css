@@ -1,0 +1,99 @@
+﻿.TopPanel {
+    backdrop-filter: blur(20px) brightness(160%) saturate(80%);
+    border-radius: 5px;
+    padding: 10px;
+    margin: 20px;
+}
+.MSPCombo
+{
+    width:100%;
+}
+#ProdLinks {
+    resize: none;
+    background-color: skyblue;
+    border-radius: 10px;
+    border: none;
+    margin-top: 20px;
+    outline: none;
+    width: 100%;
+    height: 333px;
+}
+
+.ContentPanel {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 20px 0 20px;
+}
+
+.PNameList {
+    background-color: lightblue;
+    border: solid lightblue 4px;
+    outline: none;
+}
+
+
+input {
+    border: 0;
+    border-radius: 3px;
+}
+
+    input[type=checkbox] {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+        input[type=checkbox]:hover {
+            box-shadow: 0px 0px 3px 3px lightblue;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        }
+
+        input[type=checkbox]:after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: lightblue;
+            border-radius: 3px;
+        }
+
+        input[type=checkbox]:checked:after {
+            content: "";
+            background-image: url('/img/CheckedICON.png');
+            background-repeat: no-repeat;
+            background-size: 100%;
+            background-color: lightpink;
+            border: none;
+        }
+
+        input[type=checkbox]:checked:hover {
+            box-shadow: 0px 0px 3px 3px lightpink;
+            transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        }
+
+.LinkPanel {
+    margin-top: 20px;
+    display: flex;
+}
+
+#Link_MSISOBtn {
+    height: 50px;
+    width: 250px;
+    background-image: url('/img/MSLogo.png');
+    background-size: 24px;
+    background-position: 10px;
+    background-repeat: no-repeat;
+    background-color: skyblue;
+}
+#Link_ProdDumpBtn {
+    height: 50px;
+    width: 250px;
+    background-image: url('/img/TBDLogo.png');
+    background-size: 24px;
+    background-position: 10px;
+    background-repeat: no-repeat;
+    background-color: skyblue;
+    margin-left: 20px;
+}

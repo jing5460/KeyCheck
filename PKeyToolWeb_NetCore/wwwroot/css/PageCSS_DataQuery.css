@@ -1,0 +1,41 @@
+﻿.TopPanel {
+    backdrop-filter: blur(20px) brightness(160%) saturate(80%);
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 20px;
+}
+input {
+    position: relative;
+    border: 0;
+    border-radius: 3px;
+    outline:none;
+}
+.SearchPanel {
+    text-align: center;
+    display: flex;
+}
+#BlockedKeyTb {
+    height:30px;
+    width:300px;
+}
+#DQBlockedKeyBtn {
+    height: 30px;
+    margin-left: 20px;
+    background-color: lightblue;
+}
+#BKMsgPanel {
+    margin-top: 20px;
+}
+#BKResultTable {
+    border: solid 2px deepskyblue;
+}
+.TablePanel {
+    background-color: lightblue;
+    border-radius: 5px;
+    margin-top: 10px;
+    overflow:hidden;
+}
+#BKQueryCountTb {
+    color: white;
+    margin-left: 5px;
+}
