@@ -11,3 +11,8 @@
 
 
 # 欢迎加入我们的群激活魔盒，讨论和PKeyTool相关，和激活相关等，群聊号码：799132569
+  
+  
+# 引用
+**WitherOrNot**&nbsp;&nbsp;&nbsp;&nbsp;[winkeycheck](https://github.com/WitherOrNot/winkeycheck)
+
