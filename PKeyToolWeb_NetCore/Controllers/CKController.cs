@@ -300,33 +300,125 @@ namespace PKeyToolWeb_NetCore.Controllers
             if (cindex==0)
             {
                 CheckResultModel checkData = null;
-                int conindex = 0;
                 //快速跳转到对应索引，指使用PKEY2005算法的
                 if (!key.Contains("N"))
                 {
-                    conindex= configList.FindIndex(p => p.ConfigID == 17);
-                }
-                for (; conindex <configList.Count; conindex++)
-                {
-                    //string configpath = rootPath+"pkeyconfig/"+configList[i].ConfigPath;
-                    string configpath = Path.Combine(rootPath, "pkeyconfig", configList[conindex].ConfigPath);
-                    string configname = configList[conindex].ConfigName;
-
-                    checkData=await CheckKeysFunc(key, configpath, configname);
-                    if (checkData!=null)
+                    bool isContinueSearch = false;
+                    for (int conindex = configList.FindIndex(p => p.ConfigID == 14); conindex <configList.Count; conindex++)
                     {
-                        break;
+                        //string configpath = rootPath+"pkeyconfig/"+configList[i].ConfigPath;
+                        string configpath = Path.Combine(rootPath, "pkeyconfig", configList[conindex].ConfigPath);
+                        string configname = configList[conindex].ConfigName;
+
+                        checkData=await CheckKeysFunc(key, configpath, configname);
+                        if (checkData!=null)
+                        {
+                            break;
+                        }
+
+                        if (conindex == configList.Count - 1)
+                        {
+                            isContinueSearch= true;
+                        }
                     }
 
-                    if (conindex == configList.Count - 1)
+                    if(isContinueSearch)
                     {
-                        return new CheckResultModel() { ProductKey=key, ActiveCount= "", IsShowPopup=true, ShowMessage="密钥错误或者证书不匹配!" };
+                        for (int conindex = 0; conindex <configList.FindIndex(p => p.ConfigID == 14); conindex++)
+                        {
+                            //string configpath = rootPath+"pkeyconfig/"+configList[i].ConfigPath;
+                            string configpath = Path.Combine(rootPath, "pkeyconfig", configList[conindex].ConfigPath);
+                            string configname = configList[conindex].ConfigName;
+
+                            checkData=await CheckKeysFunc(key, configpath, configname);
+                            if (checkData!=null)
+                            {
+                                break;
+                            }
+
+                            if (conindex == configList.Count - 1)
+                            {
+                                return new CheckResultModel() { ProductKey=key, ActiveCount= "", IsShowPopup=true, ShowMessage="密钥错误或者证书不匹配!" };
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    for (int conindex = 0; conindex <configList.Count; conindex++)
+                    {
+                        //string configpath = rootPath+"pkeyconfig/"+configList[i].ConfigPath;
+                        string configpath = Path.Combine(rootPath, "pkeyconfig", configList[conindex].ConfigPath);
+                        string configname = configList[conindex].ConfigName;
+
+                        checkData=await CheckKeysFunc(key, configpath, configname);
+                        if (checkData!=null)
+                        {
+                            break;
+                        }
+
+                        if (conindex == configList.Count - 1)
+                        {
+                            return new CheckResultModel() { ProductKey=key, ActiveCount= "", IsShowPopup=true, ShowMessage="密钥错误或者证书不匹配!" };
+                        }
                     }
                 }
 
                 //反馈检测结果
                 return checkData;
+            }
+            else if (cindex==900)
+            {
+                CheckResultModel checkData = null;
+                for (int conindex = 0; conindex <configList.Count; conindex++)
+                {
+                    List<int> checkID = new List<int>() { 12,13,14,15,16,18};
+                    if(checkID.Where(p => p==configList[conindex].ConfigID).Count()>0)
+                    {
+                        string configpath = Path.Combine(rootPath, "pkeyconfig", configList[conindex].ConfigPath);
+                        string configname = configList[conindex].ConfigName;
 
+                        checkData=await CheckKeysFunc(key, configpath, configname);
+                        if (checkData!=null)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (conindex == configList.Count - 1)
+                    {
+                        return new CheckResultModel() { ProductKey=key, ActiveCount= "", IsShowPopup=true, ShowMessage="当前密钥可能不是Office的产品密钥，请尝试更换其他检测项。" };
+                    }
+                }
+                //反馈检测结果
+                return checkData;
+            }     
+            else if (cindex==901)
+            {
+                CheckResultModel checkData = null;
+                for (int conindex = 0; conindex <configList.Count; conindex++)
+                {
+                    List<int> checkID = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 19, 20, 21, 29 };
+                    if (checkID.Where(p => p==configList[conindex].ConfigID).Count()>0)
+                    {
+                        string configpath = Path.Combine(rootPath, "pkeyconfig", configList[conindex].ConfigPath);
+                        string configname = configList[conindex].ConfigName;
+
+                        checkData=await CheckKeysFunc(key, configpath, configname);
+                        if (checkData!=null)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (conindex == configList.Count - 1)
+                    {
+                        return new CheckResultModel() { ProductKey=key, ActiveCount= "", IsShowPopup=true, ShowMessage="当前密钥可能不是Windows的产品密钥，请尝试更换其他检测项。" };
+                    }
+                }
+                //反馈检测结果
+                return checkData;
             }
             else
             {
@@ -351,7 +443,6 @@ namespace PKeyToolWeb_NetCore.Controllers
                 }
 
             }
-
         }
 
         [DllImport("pidgenx.dll", EntryPoint = "PidGenX", CharSet = CharSet.Auto)]
@@ -604,3 +695,4 @@ namespace PKeyToolWeb_NetCore.Controllers
         }
     }
 }
+
