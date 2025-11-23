@@ -19,4 +19,8 @@
   
 # 引用
 **WitherOrNot**&nbsp;&nbsp;&nbsp;&nbsp;[winkeycheck](https://github.com/WitherOrNot/winkeycheck)
+  
+  
+# Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=FHWWC/KeyCheck&type=date&legend=top-left)](https://www.star-history.com/#FHWWC/KeyCheck&type=date&legend=top-left)
