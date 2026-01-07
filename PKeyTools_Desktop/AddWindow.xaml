@@ -1,0 +1,24 @@
+﻿<Window x:Class="PKeyTools.AddWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PKeyTools"
+        mc:Ignorable="d"
+        Title="AddWindow" Height="250" Width="600">
+    
+    <StackPanel Margin="10,5">
+        <TextBlock Name="T1" Text="添加证书页面" FontSize="16" FontWeight="Bold"/>
+        <TextBlock Text="证书名称：" Margin="0,20,0,0"/>
+        <TextBox Name="ConfigName" MaxLength="50"/>
+        <TextBlock Text="证书路径：" Margin="0,10,0,0"/>
+        <StackPanel Orientation="Horizontal">
+            <Button Name="FileSelect" Content="..." Click="FileSelect_Click"/>
+            <TextBlock Name="FileAddress" Margin="10,0,0,0"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+            <Button Name="SaveEdit" Content="保存操作" Click="SaveEdit_Click"/>
+            <Button Name="CancelEdit" Content="取消操作" Margin="20,0,0,0" Click="CancelEdit_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
