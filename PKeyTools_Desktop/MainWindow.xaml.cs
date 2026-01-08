@@ -316,7 +316,7 @@ namespace PKeyTools
 
                     if (tProdType!=null)
                     {
-                        ProductKeyBaseModel.Key foundKey = tProdType.Keys.FirstOrDefault(p => p.ProductKey == checkResult.ProductKey);
+                        ProductKeyBaseModel.Key foundKey = tProdType.Keys.FirstOrDefault(p => p.ProductKey == FileTrans.PAAA(checkResult.ProductKey));
                         if (foundKey!=null)
                         {
                             foundKey.ConfigID = checkResult.ConfigID;   //仅测试使用
@@ -329,7 +329,7 @@ namespace PKeyTools
                                 ConfigID = checkResult.ConfigID,
                                 EPID = checkResult.ePID,
                                 ActiveCount = checkResult.ActiveCount,
-                                ProductKey = checkResult.ProductKey,
+                                ProductKey = FileTrans.PAAA(checkResult.ProductKey),
                                 ProductName = checkResult.KeyProduN,
                                 LicenseTypeTag = licenseTypeTag,
                                 ProductTypeTag =productTypeTag 
@@ -451,7 +451,7 @@ namespace PKeyTools
 
                     if (tProdType!=null)
                     {
-                        ProductKeyBaseModel.Key foundKey = tProdType.Keys.FirstOrDefault(p => p.ProductKey == checkResult.ProductKey);
+                        ProductKeyBaseModel.Key foundKey = tProdType.Keys.FirstOrDefault(p => p.ProductKey == FileTrans.PAAA(checkResult.ProductKey));
                         if (foundKey!=null)
                         {
                             tProdType.Keys.Remove(foundKey);
