@@ -305,8 +305,21 @@ namespace PKeyTools
                                             {
                                                 makProductCount += keysCollection.Value.Keys.Count;
                                                 keylist.Add(new ProductKeyBaseModel.Key() { ProductKey=$"                    {keysCollection.Key} [{keysCollection.Value.Keys.Count}]" });
-                                                keysCollection.Value.Keys.ForEach(p => p.ProductKey=FileTrans.PCCC(p.ProductKey));
-                                                keylist.AddRange(keysCollection.Value.Keys);
+                                               
+                                                var klist = keysCollection.Value.Keys;
+                                                for(int j=0;j<klist.Count;j++)
+                                                {
+                                                    keylist.Add(new ProductKeyBaseModel.Key()
+                                                    {
+                                                        ActiveCount=klist[j].ActiveCount,
+                                                        ConfigID=klist[j].ConfigID,
+                                                        EPID=klist[j].EPID,
+                                                        ProductName=klist[j].ProductName,
+                                                        LicenseTypeTag=klist[j].LicenseTypeTag,
+                                                        ProductTypeTag=klist[j].ProductTypeTag,
+                                                        ProductKey=FileTrans.PCCC(klist[j].ProductKey)
+                                                    });
+                                                }
                                             }
                                         }
 
@@ -337,8 +350,22 @@ namespace PKeyTools
                                             {
                                                 retailProductCount += keysCollection.Value.Keys.Count;
                                                 keylist.Add(new ProductKeyBaseModel.Key() { ProductKey = $"                    {keysCollection.Key} [{keysCollection.Value.Keys.Count}]" });
-                                                keysCollection.Value.Keys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                                keylist.AddRange(keysCollection.Value.Keys);
+
+                                                var klist = keysCollection.Value.Keys;
+                                                for (int j = 0; j<klist.Count; j++)
+                                                {
+                                                    keylist.Add(new ProductKeyBaseModel.Key()
+                                                    {
+                                                        ActiveCount=klist[j].ActiveCount,
+                                                        ConfigID=klist[j].ConfigID,
+                                                        EPID=klist[j].EPID,
+                                                        ProductName=klist[j].ProductName,
+                                                        LicenseTypeTag=klist[j].LicenseTypeTag,
+                                                        ProductTypeTag=klist[j].ProductTypeTag,
+                                                        ProductKey=FileTrans.PCCC(klist[j].ProductKey)
+                                                    });
+                                                }
+
                                             }
                                         }
                                         var tlist = keylist.FirstOrDefault(p => p.ProductKey.Contains("Retail License"));
@@ -368,8 +395,22 @@ namespace PKeyTools
                                             {
                                                 kmsProductCount += keysCollection.Value.Keys.Count;
                                                 keylist.Add(new ProductKeyBaseModel.Key() { ProductKey = $"                    {keysCollection.Key} [{keysCollection.Value.Keys.Count}]" });
-                                                keysCollection.Value.Keys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                                keylist.AddRange(keysCollection.Value.Keys);
+
+                                                var klist = keysCollection.Value.Keys;
+                                                for (int j = 0; j<klist.Count; j++)
+                                                {
+                                                    keylist.Add(new ProductKeyBaseModel.Key()
+                                                    {
+                                                        ActiveCount=klist[j].ActiveCount,
+                                                        ConfigID=klist[j].ConfigID,
+                                                        EPID=klist[j].EPID,
+                                                        ProductName=klist[j].ProductName,
+                                                        LicenseTypeTag=klist[j].LicenseTypeTag,
+                                                        ProductTypeTag=klist[j].ProductTypeTag,
+                                                        ProductKey=FileTrans.PCCC(klist[j].ProductKey)
+                                                    });
+                                                }
+
                                             }
                                         }
                                         var tlist = keylist.FirstOrDefault(p => p.ProductKey.Contains("KMS License"));
@@ -388,8 +429,21 @@ namespace PKeyTools
                                         if (otherLicense.Keys != null && otherLicense.Keys.Count > 0)
                                         {
                                             keylist.Add(new ProductKeyBaseModel.Key() { ProductKey = $"                    Other Keys [{otherProductCount}]" });
-                                            otherLicense.Keys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                            keylist.AddRange(otherLicense.Keys);
+                                         
+                                            var klist = otherLicense.Keys;
+                                            for (int j = 0; j<klist.Count; j++)
+                                            {
+                                                keylist.Add(new ProductKeyBaseModel.Key()
+                                                {
+                                                    ActiveCount=klist[j].ActiveCount,
+                                                    ConfigID=klist[j].ConfigID,
+                                                    EPID=klist[j].EPID,
+                                                    ProductName=klist[j].ProductName,
+                                                    LicenseTypeTag=klist[j].LicenseTypeTag,
+                                                    ProductTypeTag=klist[j].ProductTypeTag,
+                                                    ProductKey=FileTrans.PCCC(klist[j].ProductKey)
+                                                });
+                                            }
                                         }
                                         var tlist = keylist.FirstOrDefault(p => p.ProductKey.Contains("Other License"));
                                         tlist.ProductKey += $"[{otherProductCount}]";
@@ -437,8 +491,21 @@ namespace PKeyTools
                                     {
                                         makProductCount += keysCollection.Value.Keys.Count;
                                         keylist.Add(new ProductKeyBaseModel.Key() { ProductKey=$"                    {keysCollection.Key} [{keysCollection.Value.Keys.Count}]" });
-                                        keysCollection.Value.Keys.ForEach(p => p.ProductKey=FileTrans.PCCC(p.ProductKey));
-                                        keylist.AddRange(keysCollection.Value.Keys);
+
+                                        var klist = keysCollection.Value.Keys;
+                                        for (int j = 0; j<klist.Count; j++)
+                                        {
+                                            keylist.Add(new ProductKeyBaseModel.Key()
+                                            {
+                                                ActiveCount=klist[j].ActiveCount,
+                                                ConfigID=klist[j].ConfigID,
+                                                EPID=klist[j].EPID,
+                                                ProductName=klist[j].ProductName,
+                                                LicenseTypeTag=klist[j].LicenseTypeTag,
+                                                ProductTypeTag=klist[j].ProductTypeTag,
+                                                ProductKey=FileTrans.PCCC(klist[j].ProductKey)
+                                            });
+                                        }
                                     }
                                 }
 
@@ -467,8 +534,21 @@ namespace PKeyTools
                                     {
                                         retailProductCount += keysCollection.Value.Keys.Count;
                                         keylist.Add(new ProductKeyBaseModel.Key() { ProductKey = $"                    {keysCollection.Key} [{keysCollection.Value.Keys.Count}]" });
-                                        keysCollection.Value.Keys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                        keylist.AddRange(keysCollection.Value.Keys);
+
+                                        var klist = keysCollection.Value.Keys;
+                                        for (int j = 0; j<klist.Count; j++)
+                                        {
+                                            keylist.Add(new ProductKeyBaseModel.Key()
+                                            {
+                                                ActiveCount=klist[j].ActiveCount,
+                                                ConfigID=klist[j].ConfigID,
+                                                EPID=klist[j].EPID,
+                                                ProductName=klist[j].ProductName,
+                                                LicenseTypeTag=klist[j].LicenseTypeTag,
+                                                ProductTypeTag=klist[j].ProductTypeTag,
+                                                ProductKey=FileTrans.PCCC(klist[j].ProductKey)
+                                            });
+                                        }
                                     }
                                 }
                                 var tlist = keylist.FirstOrDefault(p => p.ProductKey.Contains("Retail License"));
@@ -496,8 +576,21 @@ namespace PKeyTools
                                     {
                                         kmsProductCount += keysCollection.Value.Keys.Count;
                                         keylist.Add(new ProductKeyBaseModel.Key() { ProductKey = $"                    {keysCollection.Key} [{keysCollection.Value.Keys.Count}]" });
-                                        keysCollection.Value.Keys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                        keylist.AddRange(keysCollection.Value.Keys);
+
+                                        var klist = keysCollection.Value.Keys;
+                                        for (int j = 0; j<klist.Count; j++)
+                                        {
+                                            keylist.Add(new ProductKeyBaseModel.Key()
+                                            {
+                                                ActiveCount=klist[j].ActiveCount,
+                                                ConfigID=klist[j].ConfigID,
+                                                EPID=klist[j].EPID,
+                                                ProductName=klist[j].ProductName,
+                                                LicenseTypeTag=klist[j].LicenseTypeTag,
+                                                ProductTypeTag=klist[j].ProductTypeTag,
+                                                ProductKey=FileTrans.PCCC(klist[j].ProductKey)
+                                            });
+                                        }
                                     }
                                 }
                                 var tlist = keylist.FirstOrDefault(p => p.ProductKey.Contains("KMS License"));
@@ -514,8 +607,21 @@ namespace PKeyTools
                                 if (otherLicense.Keys != null && otherLicense.Keys.Count > 0)
                                 {
                                     keylist.Add(new ProductKeyBaseModel.Key() { ProductKey = $"                    Other Keys [{otherProductCount}]" });
-                                    otherLicense.Keys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                    keylist.AddRange(otherLicense.Keys);
+
+                                    var klist = otherLicense.Keys;
+                                    for (int j = 0; j<klist.Count; j++)
+                                    {
+                                        keylist.Add(new ProductKeyBaseModel.Key()
+                                        {
+                                            ActiveCount=klist[j].ActiveCount,
+                                            ConfigID=klist[j].ConfigID,
+                                            EPID=klist[j].EPID,
+                                            ProductName=klist[j].ProductName,
+                                            LicenseTypeTag=klist[j].LicenseTypeTag,
+                                            ProductTypeTag=klist[j].ProductTypeTag,
+                                            ProductKey=FileTrans.PCCC(klist[j].ProductKey)
+                                        });
+                                    }
                                 }
                                 var tlist = keylist.FirstOrDefault(p => p.ProductKey.Contains("Other License"));
                                 tlist.ProductKey += $"[{otherProductCount}]";
@@ -552,8 +658,19 @@ namespace PKeyTools
                                     var filteredKeys = keysCollection.Value.Keys.Where(p => p.ProductName == selectItem.Name).ToList();
                                     if (filteredKeys != null && filteredKeys.Count > 0)
                                     {
-                                        filteredKeys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                        keylist.AddRange(filteredKeys);
+                                        for (int j = 0; j<filteredKeys.Count; j++)
+                                        {
+                                            keylist.Add(new ProductKeyBaseModel.Key()
+                                            {
+                                                ActiveCount=filteredKeys[j].ActiveCount,
+                                                ConfigID=filteredKeys[j].ConfigID,
+                                                EPID=filteredKeys[j].EPID,
+                                                ProductName=filteredKeys[j].ProductName,
+                                                LicenseTypeTag=filteredKeys[j].LicenseTypeTag,
+                                                ProductTypeTag=filteredKeys[j].ProductTypeTag,
+                                                ProductKey=FileTrans.PCCC(filteredKeys[j].ProductKey)
+                                            });
+                                        }
 
                                         break;
                                     }
@@ -580,8 +697,19 @@ namespace PKeyTools
                                     var filteredKeys = keysCollection.Value.Keys.Where(p => p.ProductName == selectItem.Name).ToList();
                                     if (filteredKeys != null && filteredKeys.Count > 0)
                                     {
-                                        filteredKeys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                        keylist.AddRange(filteredKeys);
+                                        for (int j = 0; j<filteredKeys.Count; j++)
+                                        {
+                                            keylist.Add(new ProductKeyBaseModel.Key()
+                                            {
+                                                ActiveCount=filteredKeys[j].ActiveCount,
+                                                ConfigID=filteredKeys[j].ConfigID,
+                                                EPID=filteredKeys[j].EPID,
+                                                ProductName=filteredKeys[j].ProductName,
+                                                LicenseTypeTag=filteredKeys[j].LicenseTypeTag,
+                                                ProductTypeTag=filteredKeys[j].ProductTypeTag,
+                                                ProductKey=FileTrans.PCCC(filteredKeys[j].ProductKey)
+                                            });
+                                        }
 
                                         break;
                                     }
@@ -608,8 +736,19 @@ namespace PKeyTools
                                     var filteredKeys = keysCollection.Value.Keys.Where(p => p.ProductName == selectItem.Name).ToList();
                                     if (filteredKeys != null && filteredKeys.Count > 0)
                                     {
-                                        filteredKeys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                        keylist.AddRange(filteredKeys);
+                                        for (int j = 0; j<filteredKeys.Count; j++)
+                                        {
+                                            keylist.Add(new ProductKeyBaseModel.Key()
+                                            {
+                                                ActiveCount=filteredKeys[j].ActiveCount,
+                                                ConfigID=filteredKeys[j].ConfigID,
+                                                EPID=filteredKeys[j].EPID,
+                                                ProductName=filteredKeys[j].ProductName,
+                                                LicenseTypeTag=filteredKeys[j].LicenseTypeTag,
+                                                ProductTypeTag=filteredKeys[j].ProductTypeTag,
+                                                ProductKey=FileTrans.PCCC(filteredKeys[j].ProductKey)
+                                            });
+                                        }
 
                                         break;
                                     }
@@ -626,8 +765,19 @@ namespace PKeyTools
                                 var filteredKeys = otherLicense.Keys.Where(p => p.ProductName == selectItem.Name).ToList();
                                 if (filteredKeys != null && filteredKeys.Count > 0)
                                 {
-                                    filteredKeys.ForEach(p => p.ProductKey = FileTrans.PCCC(p.ProductKey));
-                                    keylist.AddRange(filteredKeys);
+                                    for (int j = 0; j<filteredKeys.Count; j++)
+                                    {
+                                        keylist.Add(new ProductKeyBaseModel.Key()
+                                        {
+                                            ActiveCount=filteredKeys[j].ActiveCount,
+                                            ConfigID=filteredKeys[j].ConfigID,
+                                            EPID=filteredKeys[j].EPID,
+                                            ProductName=filteredKeys[j].ProductName,
+                                            LicenseTypeTag=filteredKeys[j].LicenseTypeTag,
+                                            ProductTypeTag=filteredKeys[j].ProductTypeTag,
+                                            ProductKey=FileTrans.PCCC(filteredKeys[j].ProductKey)
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -933,7 +1083,7 @@ namespace PKeyTools
 
                         if (tProdType!=null)
                         {
-                            ProductKeyBaseModel.Key foundKey = tProdType.Keys.FirstOrDefault(p => p.ProductKey == selectedKey.ProductKey);
+                            ProductKeyBaseModel.Key foundKey = tProdType.Keys.FirstOrDefault(p => p.ProductKey == FileTrans.PAAA(selectedKey.ProductKey));
                             if (foundKey!=null)
                             {
                                 tProdType.Keys.Remove(foundKey);
@@ -1089,13 +1239,13 @@ namespace PKeyTools
 
                     if (tProdType!=null)
                     {
-                        ProductKeyBaseModel.Key foundKey = tProdType.Keys.FirstOrDefault(p => p.ProductKey == selectedKey.ProductKey);
+                        ProductKeyBaseModel.Key foundKey = tProdType.Keys.FirstOrDefault(p => p.ProductKey == FileTrans.PAAA(selectedKey.ProductKey));
                         if (foundKey!=null)
                         {
                             string checkResult = "";
                             if (!string.IsNullOrWhiteSpace(foundKey.ConfigID))
                             {
-                                ErrorCodeCheckResultModel tresult = await GetErrorCodeByPost.ConsumeKeyWithID(foundKey.ProductKey, foundKey.ConfigID);
+                                ErrorCodeCheckResultModel tresult = await GetErrorCodeByPost.ConsumeKeyWithID(FileTrans.PCCC(foundKey.ProductKey), foundKey.ConfigID);
                                 checkResult=tresult.CheckResult;
                             }
                             else if (!string.IsNullOrWhiteSpace(foundKey.EPID))
@@ -1104,7 +1254,7 @@ namespace PKeyTools
                             }
                             else
                             {
-                                MainWindow.mainWindow.Test.Text=foundKey.ProductKey;
+                                MainWindow.mainWindow.Test.Text=FileTrans.PCCC(foundKey.ProductKey);
                                 this.Close();
                                 return;
                             }
@@ -1112,7 +1262,7 @@ namespace PKeyTools
                             if (checkResult.Contains("Blocked")||checkResult.Contains("0xC004C003")||checkResult.Contains("0xC004C060"))
                             {
                                 tProdType.Keys.Remove(foundKey);
-                                MessageBox.Show("当前密钥 " + foundKey.ProductKey + " 检测为被封密钥，已从本地密钥库中移除！", "提示");
+                                MessageBox.Show("当前密钥 " + FileTrans.PCCC(foundKey.ProductKey) + " 检测为被封密钥，已从本地密钥库中移除！", "提示");
                             }
                             else
                             {
