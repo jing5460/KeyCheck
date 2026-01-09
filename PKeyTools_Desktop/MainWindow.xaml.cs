@@ -191,6 +191,10 @@ namespace PKeyTools
         }
         public void AddOrUpdateKey(CheckResultModel checkResult)
         {
+            if(string.IsNullOrWhiteSpace(checkResult.ActiveCount))
+            {
+                return;
+            }
             if (keyBase!=null)
             {
                 try
