@@ -92,7 +92,7 @@ namespace PKeyTools
             KeyConfig.Text = KeyProduN.Text = KeyEdition.Text = ePID.Text = ProductID.Text = KeySKU.Text = LicenseType.Text = LicenseChannel.Text = PartNum.Text = ActiveCount.Text = "";
 
             var alltext=File.ReadAllText(GlobalParameters.GetKeyBaseFilePath());
-            if (alltext.Contains(tproductKey))
+            if (alltext.Contains(FileTrans.PAAA(tproductKey)))
             {
                 MessageBoxResult result = MessageBox.Show("该密钥 " + tproductKey + " 已经在您的数据库里了,是否重新检测？", "提示", MessageBoxButton.YesNo);
                 if (result != MessageBoxResult.Yes)
@@ -510,7 +510,7 @@ namespace PKeyTools
                 {
                     for (int i = 0; i < abc.Count; i++)
                     {
-                        if (alltext.Contains(abc[i].Value))
+                        if (alltext.Contains(FileTrans.PAAA(abc[i].Value)))
                         {
                             MessageBoxResult result = MessageBox.Show("该密钥 " + abc[i].Value + " 已经在您的数据库里了,是否重新检测？", "提示", MessageBoxButton.YesNo);
                             if (result != MessageBoxResult.Yes)
