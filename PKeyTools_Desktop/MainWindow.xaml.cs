@@ -515,6 +515,14 @@ namespace PKeyTools
                             MessageBoxResult result = MessageBox.Show("该密钥 " + abc[i].Value + " 已经在您的数据库里了,是否重新检测？", "提示", MessageBoxButton.YesNo);
                             if (result != MessageBoxResult.Yes)
                             {
+                                if (abc.Count>1)
+                                {
+                                    Application.Current.Dispatcher.Invoke(() =>
+                                    {
+                                        RawResult.Text += "密钥 " + abc[i].Value + " 已跳过检测 \n\n";
+                                    });
+                                }
+
                                 continue;
                             }
                         }
@@ -619,15 +627,6 @@ namespace PKeyTools
 
                             }
 
-                            //检测完成后需要切换单个密钥和多个密钥的UI状态
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                TestPanel.Visibility=(Visibility)2;
-                                Panel1.Visibility=(Visibility)2;
-                                Panel2.Visibility=0;
-
-                                ResetCheckUI();
-                            });
                         }
                         else
                         {
@@ -669,15 +668,6 @@ namespace PKeyTools
 
                             }
 
-                            //检测完成后需要切换单个密钥和多个密钥的UI状态
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                TestPanel.Visibility=(Visibility)2;
-                                Panel1.Visibility=0;
-                                Panel2.Visibility=(Visibility)2;
-
-                                ResetCheckUI();
-                            });
                         }
 
                     }
@@ -687,6 +677,23 @@ namespace PKeyTools
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             RawResult.Text += "\n All done. 以上是所有检测数据。";
+
+                            TestPanel.Visibility=(Visibility)2;
+                            Panel1.Visibility=(Visibility)2;
+                            Panel2.Visibility=0;
+
+                            ResetCheckUI();
+                        });
+                    }
+                    else
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            TestPanel.Visibility=(Visibility)2;
+                            Panel1.Visibility=0;
+                            Panel2.Visibility=(Visibility)2;
+
+                            ResetCheckUI();
                         });
                     }
 
