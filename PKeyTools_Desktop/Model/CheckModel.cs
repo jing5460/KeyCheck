@@ -78,11 +78,13 @@ namespace PKeyTools.Model
             MatchCollection abc = Regex.Matches(k, KeyFormat);
             if (abc.Count > 0)
             {
-                if (abc.Count == 1)
+                var keyList = abc.GroupBy(p => p.Value).Select(g => g.First()).ToList();
+
+                if (keyList.Count == 1)
                 {
                     keynummode=0;
 
-                    CheckResultModel checkResult = await Checking(abc[0].Value, cindex);
+                    CheckResultModel checkResult = await Checking(keyList[0].Value, cindex);
                     if (checkResult == null)
                     {
                         resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "ERROR!" });
@@ -93,20 +95,13 @@ namespace PKeyTools.Model
 
                     return resultList;
                 }
-                else if (abc.Count > 50)
-                {
-                    keynummode=1;
-
-                    resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "一次不能检测超过50个Key" });
-                    return resultList;
-                }
                 else
                 {
                     keynummode=1;
 
-                    for (int i = 0; i < abc.Count; i++)
+                    for (int i = 0; i < keyList.Count; i++)
                     {
-                        resultList.Add(await Checking(abc[i].Value, cindex));
+                        resultList.Add(await Checking(keyList[i].Value, cindex));
                     }
 
                     return resultList;
