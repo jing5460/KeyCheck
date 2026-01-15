@@ -483,11 +483,13 @@ namespace PKeyTools
             MatchCollection abc = Regex.Matches(content, CheckModel.KeyFormat);
             if(abc.Count>0)
             {
-                if (abc.Count>1)
+                var keyList = abc.GroupBy(p => p.Value).Select(g => g.First()).ToList();
+
+                if (keyList.Count>1)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        RawResult.Text = "已经从您粘贴的文本上获得了" + abc.Count + "个密钥，下面是检测结果\n\n\n";
+                        RawResult.Text = "已经从您粘贴的文本上获得了" + keyList.Count + "个密钥，下面是检测结果\n\n\n";
                     });
                 }
 
@@ -495,7 +497,7 @@ namespace PKeyTools
                 SelectConfig.IsEnabled = false;
                 CheckOpt.IsEnabled = false;
 
-                Test.Text = abc.Count+" Keys";
+                Test.Text = keyList.Count+" Keys";
                 this.Height = 150;
                 KeyConfig.Text = KeyProduN.Text = KeyEdition.Text = ePID.Text = ProductID.Text = KeySKU.Text = LicenseType.Text = LicenseChannel.Text = PartNum.Text = ActiveCount.Text = "";
 
@@ -508,18 +510,18 @@ namespace PKeyTools
 
                 Task.Run(async ()=>
                 {
-                    for (int i = 0; i < abc.Count; i++)
+                    for (int i = 0; i < keyList.Count; i++)
                     {
-                        if (alltext.Contains(FileTrans.PAAA(abc[i].Value)))
+                        if (alltext.Contains(FileTrans.PAAA(keyList[i].Value)))
                         {
-                            MessageBoxResult result = MessageBox.Show("该密钥 " + abc[i].Value + " 已经在您的数据库里了,是否重新检测？", "提示", MessageBoxButton.YesNo);
+                            MessageBoxResult result = MessageBox.Show("该密钥 " + keyList[i].Value + " 已经在您的数据库里了,是否重新检测？", "提示", MessageBoxButton.YesNo);
                             if (result != MessageBoxResult.Yes)
                             {
-                                if (abc.Count>1)
+                                if (keyList.Count>1)
                                 {
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
-                                        RawResult.Text += "密钥 " + abc[i].Value + " 已跳过检测 \n\n";
+                                        RawResult.Text += "密钥 " + keyList[i].Value + " 已跳过检测 \n\n";
                                     });
                                 }
 
@@ -529,15 +531,15 @@ namespace PKeyTools
 
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            MsgTitle.Text= "正在检测密钥"+abc[i].Value+"的信息...";
+                            MsgTitle.Text= "正在检测密钥"+keyList[i].Value+"的信息...";
                         });
-                        List<CheckResultModel> checkResult = await checkModel.CheckKeysClient(abc[i].Value, optionOEM, 0, optionSimp, optionMAKCode, tconfigID);
+                        List<CheckResultModel> checkResult = await checkModel.CheckKeysClient(keyList[i].Value, optionOEM, 0, optionSimp, optionMAKCode, tconfigID);
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             MsgTitle.Text= "当前密钥检测完成";
                         });
 
-                        if (abc.Count>1)
+                        if (keyList.Count>1)
                         {
                             if (checkResult != null && checkResult.Count > 0)
                             {
@@ -672,7 +674,7 @@ namespace PKeyTools
 
                     }
 
-                    if (abc.Count>1)
+                    if (keyList.Count>1)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
