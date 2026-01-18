@@ -317,6 +317,16 @@ function SKQRCodeFunc(key) {
 function ReadSKRecheckResult(xmlDoc) {
     try {
         if (xmlDoc.getElementsByTagName("Status")[0].textContent == "false") {
+            if (xmlDoc.getElementsByTagName("ReturnMessage")[0].textContent.indexOf("AppCode:NDSK") >= 0) {
+                //UI删除对应项
+                var returnvalueK = xmlDoc.getElementsByTagName("Key")[0].textContent;
+
+                var elements=document.querySelectorAll("#KeyList .ShowKStyle .skrecheckkey");
+                var kindex = Array.from(elements).findIndex(el => el.innerText == returnvalueK);
+                if (kindex >= 0) {
+                    document.querySelectorAll("#KeyList")[0].removeChild(document.querySelectorAll("#KeyList .ShowKStyle")[kindex]);
+                }
+            }
             alert(xmlDoc.getElementsByTagName("ReturnMessage")[0].textContent);
         }
         else {
@@ -438,4 +448,5 @@ function ReadQueryBlockedKeyResult(xmlDoc) {
         DQTableFailUI("解析数据失败！");
         console.log(ex);
     }
+
 }
