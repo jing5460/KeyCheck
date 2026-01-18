@@ -93,12 +93,15 @@ namespace PKeyToolWeb_NetCore.Controllers
             MatchCollection abc = Regex.Matches(k, KeyFormat);
             if (abc.Count > 0)
             {
-                if (abc.Count == 1)
+                    //对abc进行查重
+        var keyList = abc.GroupBy(p => p.Value).Select(g => g.First()).ToList();
+        
+                if (keyList.Count == 1)
                 {
                     keynummode=0;
 
                     List<CheckResultModel> CheckResultList = new List<CheckResultModel>();
-                    CheckResultModel checkResult = await Checking(abc[0].Value, cindex);
+                    CheckResultModel checkResult = await Checking(keyList[0].Value, cindex);
                     if (checkResult == null)
                     {
                         using (MemoryStream ms = new MemoryStream())
@@ -118,7 +121,7 @@ namespace PKeyToolWeb_NetCore.Controllers
                         return Encoding.UTF8.GetString(ms.ToArray());
                     }
                 }
-                else if (abc.Count > 50)
+                else if (keyList.Count > 50)
                 {
                     keynummode=1;
 
@@ -133,9 +136,9 @@ namespace PKeyToolWeb_NetCore.Controllers
                     keynummode=1;
 
                     List<CheckResultModel> CheckResultList = new List<CheckResultModel>();
-                    for (int i = 0; i < abc.Count; i++)
+                    for (int i = 0; i < keyList.Count; i++)
                     {
-                        CheckResultList.Add(await Checking(abc[i].Value, cindex));
+                        CheckResultList.Add(await Checking(keyList[i].Value, cindex));
                     }
 
                     PopupPageModel pageModel = new AllViewModel().GetPopupDetail(0, "", false, keynummode);
@@ -698,5 +701,6 @@ namespace PKeyToolWeb_NetCore.Controllers
         }
     }
 }
+
 
 
