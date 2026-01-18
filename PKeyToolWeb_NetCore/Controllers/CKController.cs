@@ -173,88 +173,91 @@ namespace PKeyToolWeb_NetCore.Controllers
         [Route("api/CK")]
         public async Task<string> CheckKeysClient(string k, int coem = 0, int skipdb = 0, int getsimp = 0, int makcode = 0, int cindex = 0)
         {
-            List<CheckResultModel> resultList = new List<CheckResultModel>();
-            if (string.IsNullOrWhiteSpace(k))
+          List<CheckResultModel> resultList = new List<CheckResultModel>();
+    if (string.IsNullOrWhiteSpace(k))
+    {
+        using (MemoryStream ms = new MemoryStream())
+        {
+            resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "参数错误！" });
+            new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
+            return Encoding.UTF8.GetString(ms.ToArray());
+        }
+    }
+
+    HttpContext.Session.SetInt32("CheckOptionOEM", coem);
+    HttpContext.Session.SetInt32("SkipBlockDBCheck", skipdb);
+    HttpContext.Session.SetInt32("GetSimpIfm", getsimp);
+    HttpContext.Session.SetInt32("CheckMAKErrorCode", makcode);
+
+    k=k.ToUpper().Replace(" ", "").Replace("\0", "");
+
+    int keynummode = 0;
+
+    MatchCollection abc = Regex.Matches(k, KeyFormat);
+    if (abc.Count > 0)
+    {
+        //对abc进行查重
+        var keyList = abc.GroupBy(p => p.Value).Select(g => g.First()).ToList();
+
+        if (keyList.Count == 1)
+        {
+            keynummode=0;
+
+            CheckResultModel checkResult = await Checking(keyList[0].Value, cindex);
+            if (checkResult == null)
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "参数错误！" });
+                    resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "ERROR!" });
                     new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
                     return Encoding.UTF8.GetString(ms.ToArray());
                 }
             }
+            resultList.Add(checkResult);
 
-            HttpContext.Session.SetInt32("CheckOptionOEM", coem);
-            HttpContext.Session.SetInt32("SkipBlockDBCheck", skipdb);
-            HttpContext.Session.SetInt32("GetSimpIfm", getsimp);
-            HttpContext.Session.SetInt32("CheckMAKErrorCode", makcode);
-
-            k=k.ToUpper().Replace(" ", "").Replace("\0", "");
-
-            int keynummode = 0;
-
-            MatchCollection abc = Regex.Matches(k, KeyFormat);
-            if (abc.Count > 0)
+            using (MemoryStream ms = new MemoryStream())
             {
-                if (abc.Count == 1)
-                {
-                    keynummode=0;
-
-                    CheckResultModel checkResult = await Checking(abc[0].Value, cindex);
-                    if (checkResult == null)
-                    {
-                        using (MemoryStream ms = new MemoryStream())
-                        {
-                            resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "ERROR!" });
-                            new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
-                            return Encoding.UTF8.GetString(ms.ToArray());
-                        }
-                    }
-                    resultList.Add(checkResult);
-
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
-                        return Encoding.UTF8.GetString(ms.ToArray());
-                    }
-                }
-                else if (abc.Count > 50)
-                {
-                    keynummode=1;
-
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "一次不能检测超过50个Key" });
-                        new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
-                        return Encoding.UTF8.GetString(ms.ToArray());
-                    }
-                }
-                else
-                {
-                    keynummode=1;
-
-                    for (int i = 0; i < abc.Count; i++)
-                    {
-                        resultList.Add(await Checking(abc[i].Value, cindex));
-                    }
-
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
-                        return Encoding.UTF8.GetString(ms.ToArray());
-                    }
-                }
-
+                new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
+                return Encoding.UTF8.GetString(ms.ToArray());
             }
-            else
+        }
+        else if (keyList.Count > 50)
+        {
+            keynummode=1;
+
+            using (MemoryStream ms = new MemoryStream())
             {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "密钥长度不正确或输入的内容里不包含密钥！！" });
-                    new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
-                    return Encoding.UTF8.GetString(ms.ToArray());
-                }
+                resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "一次不能检测超过50个Key" });
+                new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
+                return Encoding.UTF8.GetString(ms.ToArray());
             }
+        }
+        else
+        {
+            keynummode=1;
+            
+            for (int i = 0; i < keyList.Count; i++)
+            {
+                resultList.Add(await Checking(keyList[i].Value, cindex));
+            }
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
+                return Encoding.UTF8.GetString(ms.ToArray());
+            }
+        }
+
+    }
+    else
+    {
+        using (MemoryStream ms = new MemoryStream())
+        {
+            resultList.Add(new CheckResultModel() { IsShowPopup = true, ShowMessage = "密钥长度不正确或输入的内容里不包含密钥！！" });
+            new XmlSerializer(typeof(List<CheckResultModel>)).Serialize(ms, resultList);
+            return Encoding.UTF8.GetString(ms.ToArray());
+        }
+    }
         }
         [HttpPost]
         [Route("api/SK")]
@@ -695,4 +698,5 @@ namespace PKeyToolWeb_NetCore.Controllers
         }
     }
 }
+
 
