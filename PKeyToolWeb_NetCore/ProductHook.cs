@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PKeyToolWeb_NetCore.Models.PKeyModel;
+using Reloaded.Hooks;
+using Reloaded.Hooks.Definitions;
+using Reloaded.Hooks.Definitions.X86;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -5,10 +10,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using PKeyToolWeb_NetCore.Models.PKeyModel;
-using Reloaded.Hooks;
-using Reloaded.Hooks.Definitions;
-using Reloaded.Hooks.Definitions.X86;
 
 namespace PKeyToolWeb_NetCore
 {
@@ -163,30 +164,22 @@ namespace PKeyToolWeb_NetCore
             if (string.IsNullOrEmpty(str))
                 return false;
 
-            foreach (var key in TARGET_KEYS)
+            if (str.Contains("msft2005", StringComparison.OrdinalIgnoreCase)||str.Contains("msft2009", StringComparison.OrdinalIgnoreCase))
             {
-                if (str.IndexOf(key, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    //Debug.WriteLine("======================================");
-                    //Debug.WriteLine($"🔥 命中关键字符串：{key}");
-                    //Debug.WriteLine($"📍 来源：{tag}");
-                    //Debug.WriteLine($"📌 地址：0x{ptr.ToString("X8")}");
-                    string clean = TrimToReadableUnicode(str);
-                    //Debug.WriteLine($"🧾 内容：{clean}");
-                    CurrentConfigID=clean;
-                    //Debug.WriteLine($"📏 字符串长度：{clean.Length}");
-                    //Debug.WriteLine("======================================\n");
-                    return true;
-                }
+                //Debug.WriteLine("======================================");
+                //Debug.WriteLine($"🔥 命中关键字符串：{key}");
+                //Debug.WriteLine($"📍 来源：{tag}");
+                //Debug.WriteLine($"📌 地址：0x{ptr.ToString("X8")}");
+                string clean = TrimToReadableUnicode(str);
+                //Debug.WriteLine($"🧾 内容：{clean}");
+                CurrentConfigID=clean;
+                //Debug.WriteLine($"📏 字符串长度：{clean.Length}");
+                //Debug.WriteLine("======================================\n");
+                return true;
             }
 
             return false;
         }
-        private static readonly string[] TARGET_KEYS =
-        {
-            "msft2009",
-            "msft2005"
-        };
         private static string TrimToReadableUnicode(string input)
         {
             if (string.IsNullOrEmpty(input))
