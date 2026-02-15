@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PKeyTools;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -19,101 +20,6 @@ namespace PKeyTools.Model
 {
     public class AllModel
     {
-        public List<BlockedKeys> BKList { get; set; }
-        public List<List2> L2List { get; set; }
-        public List<OldBlockedKeys> OBKList { get; set; }
-        public List<SharedKey> SKList { get; set; }
-        public List<CheckResultModel> CheckResultList { get; set; }
-        public List<SharedKeyIfm> SharedKeyIfmList { get; set; }
-
-        public class BlockedKeys
-        {
-            [XmlIgnore]
-            public int Id { get; set; }
-            /// <summary>
-            /// 密钥
-            /// </summary>
-            public string A { get; set; }
-            /// <summary>
-            /// 产品名称
-            /// </summary>
-            public string B { get; set; }
-            /// <summary>
-            /// 首次检测时间
-            /// </summary>
-            public string C { get; set; }
-            /// <summary>
-            /// 最后检测时间
-            /// </summary>
-            public string D { get; set; }
-        }
-        public class List2
-        {
-            [XmlIgnore]
-            public int Id { get; set; }
-            /// <summary>
-            /// 密钥
-            /// </summary>
-            public string A { get; set; }
-            /// <summary>
-            /// 产品名称
-            /// </summary>
-            public string B { get; set; }
-            /// <summary>
-            /// 授权类型
-            /// </summary>
-            public string C { get; set; }
-            /// <summary>
-            /// 可用次数/错误代码
-            /// </summary>
-            public string D { get; set; }
-        }
-        public class OldBlockedKeys
-        {
-            [XmlIgnore]
-            public int Id { get; set; }
-            /// <summary>
-            /// 密钥
-            /// </summary>
-            public string Key { get; set; }
-        }
-        public class SharedKey
-        {
-            [XmlIgnore]
-            public int Id { get; set; }
-            /// <summary>
-            /// 密钥
-            /// </summary>
-            public string A { get; set; }
-            /// <summary>
-            /// 产品名称
-            /// </summary>
-            public string C { get; set; }
-            /// <summary>
-            /// 可用次数/错误代码
-            /// </summary>
-            public string D { get; set; }
-            /// <summary>
-            /// 授权类型
-            /// </summary>
-            public string LicType { get; set; }
-            /// <summary>
-            /// EPID
-            /// </summary>
-            public string? EPID { get; set; }
-            /// <summary>
-            /// ConfigID
-            /// </summary>
-            public string? ConfigID { get; set; }
-            /// <summary>
-            /// 分享人
-            /// </summary>
-            public string Body { get; set; }
-            /// <summary>
-            /// 分享时间
-            /// </summary>
-            public DateTime Time { get; set; }
-        }
         public class CheckResultModel
         {
             public string ProductKey { get; set; } = "";
@@ -136,24 +42,6 @@ namespace PKeyTools.Model
             /// 弹窗的提示文本
             /// </summary>
             public string ShowMessage;
-        }
-        public class SharedKeyIfm
-        {
-            public string ProductName { get; set; }
-            public int Count { get; set; }
-        }
-        public class RecheckSKReturnModel
-        {
-            public string Key { get; set; }
-            public bool Status { get; set; }
-            public string CheckResult { get; set; }
-            public string ReturnMessage { get; set; }
-        }
-        public class BlockedKeyQueryResultModel
-        {
-            public bool Result { get; set; }
-            public string ReturnMessage { get; set; }
-            public List<BlockedKeys> Keys { get; set; }
         }
     }
 
@@ -520,11 +408,11 @@ namespace PKeyTools.Model
                     </TokenEntry>
                     <TokenEntry>
                         <Name>ProductKeyType</Name>
-                        <Value>msft:rm/algorithm/pkey/2009</Value>
+                        <Value>msft:rm/algorithm/pkey/{3}</Value>
                     </TokenEntry>
                     <TokenEntry>
                         <Name>ProductKeyActConfigId</Name>
-                        <Value>{3}</Value>
+                        <Value>{4}</Value>
                     </TokenEntry>
                     <TokenEntry>
                         <Name>otherInfoPublic.licenseCategory</Name>
@@ -548,19 +436,19 @@ namespace PKeyTools.Model
                     </TokenEntry>
                     <TokenEntry>
                         <Name>ClientSystemTime</Name>
-                        <Value>{4}</Value>
-                    </TokenEntry>
-                    <TokenEntry>
-                        <Name>ClientSystemTimeUtc</Name>
                         <Value>{5}</Value>
                     </TokenEntry>
                     <TokenEntry>
-                        <Name>otherInfoPublic.secureStoreId</Name>
+                        <Name>ClientSystemTimeUtc</Name>
                         <Value>{6}</Value>
                     </TokenEntry>
                     <TokenEntry>
+                        <Name>otherInfoPublic.secureStoreId</Name>
+                        <Value>{7}</Value>
+                    </TokenEntry>
+                    <TokenEntry>
                         <Name>otherInfoPrivate.secureStoreId</Name>
-                        <Value>{6}</Value>
+                        <Value>{7}</Value>
                     </TokenEntry>
                 </Values>
             </Claims>
@@ -601,7 +489,8 @@ namespace PKeyTools.Model
         </RequestSecurityToken>
     </soap:Body>
 </soap:Envelope>";
-        public static async Task<ErrorCodeCheckResultModel> ConsumeKey(string pkey, string configpath, string config_ext = "Retail")
+        public static string targetHookDLL= Path.Combine(AppContext.BaseDirectory.Replace("bin\\Debug\\net8.0-windows", "").Replace("bin\\Release\\net8.0-windows", ""), "ProductKeyUtilities.dll");
+        public static async Task<ErrorCodeCheckResultModel> ConsumeKey_2009(string pkey, string configpath, string config_ext = "Retail")
         {
             string pl_data = @"<?xml version=""1.0"" encoding=""utf-8""?><rg:licenseGroup xmlns:rg=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><r:license xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS"" licenseId=""{add96a1a-5ae7-425d-935d-3b6effd43a92}"" xmlns:sx=""urn:mpeg:mpeg21:2003:01-REL-SX-NS"" xmlns:mx=""urn:mpeg:mpeg21:2003:01-REL-MX-NS"" xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2"" xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><r:title>Windows(R) Publishing License (Public)</r:title><r:grant><r:forAll varName=""productId""><r:anXmlExpression>/sl:productId/sl:pid</r:anXmlExpression></r:forAll><r:forAll varName=""binding""></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:issue/><r:grant><r:forAll varName=""application""><r:anXmlExpression>editionId[@value="""" or @value=""EnterpriseS""]</r:anXmlExpression></r:forAll><r:forAll varName=""appid""><r:propertyPossessor><tm:application varRef=""application""/><r:trustedRootIssuers><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder></r:trustedRootIssuers></r:propertyPossessor></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><sl:runSoftware/><sl:appId varRef=""appid""/><r:allConditions><r:allConditions><sl:productPolicies xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""><sl:priority>500</sl:priority><sl:policyInt name=""Security-SPP-Reserved-Store-Token-Required"" attributes=""override-only"">0</sl:policyInt><sl:policyInt name=""Kernel-NonGenuineNotificationType"" attributes=""override-only"">2</sl:policyInt><sl:policyStr name=""Security-SPP-Reserved-Windows-Version-V2"" attributes=""override-only"">10.0</sl:policyStr><sl:policyInt name=""Security-SPP-WriteWauMarker"">1</sl:policyInt><sl:policyStr name=""Security-SPP-Reserved-Family"" attributes=""override-only"">EnterpriseS</sl:policyStr></sl:productPolicies><sl:proxyExecutionKey xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""></sl:proxyExecutionKey><sl:externalValidator xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""><sl:type>msft:sl/externalValidator/generic</sl:type><sl:data Algorithm=""msft:rm/algorithm/flags/1.0"">DAAAAAEAAAAFAAAA</sl:data></sl:externalValidator></r:allConditions><mx:renderer><sl:binding varRef=""binding""/><sl:productId varRef=""productId""/></mx:renderer></r:allConditions></r:grant><r:allConditions><sl:businessRules xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""></sl:businessRules></r:allConditions></r:grant><r:issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.microsoft.com/xrml/lwc14n""/><SignatureMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#rsa-sha1""/><Reference><Transforms><Transform Algorithm=""urn:mpeg:mpeg21:2003:01-REL-R-NS:licenseTransform""/><Transform Algorithm=""http://www.microsoft.com/xrml/lwc14n""/></Transforms><DigestMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#sha1""/><DigestValue>ivMENCvkqJvb41ZNgue9GpfjWDI=</DigestValue></Reference></SignedInfo><SignatureValue>exwwz6jLpaJ0u1KEEDOCFDXwUAEwI8jUpcamyUkFyqbuYBVCinoihNCtgZAvXcQ+N35MNSXLKXlXpttYE0M2O8dZWR/Frxt38RWxCQj/4heGIwPqQJ7KUZtOdBvytjA6XSvv6uqq1aNAaSWyb7l7jkXc14ycfvxILMVqYdmkIw6BQNZ8/R/anl4VQjAeBdg/+DrcxoHvVT1pVe5PJkrPFRi2B7+0P0oWBljataVjwqDnxYfcJq7lkErHsl78sH2rWPOP/carliYgFNTyEc8437MN5xkNJmeQpsAyTpfE+H7r74WXsk59aU7NoUxteOBRzUNZCgCp2Trr09awd5k2Pg==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></KeyInfo></Signature><r:details><r:timeOfIssue>2016-01-01T00:00:00Z</r:timeOfIssue></r:details></r:issuer><r:otherInfo xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><tm:infoTables xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><tm:infoList tag=""#global""><tm:infoStr name=""licenseType"">msft:sl/PL/GENERIC/PUBLIC</tm:infoStr><tm:infoStr name=""licenseVersion"">2.0</tm:infoStr><tm:infoStr name=""licensorUrl"">http://licensing.microsoft.com</tm:infoStr><tm:infoStr name=""licenseCategory"">msft:sl/PL/GENERIC/PUBLIC</tm:infoStr><tm:infoStr name=""productSkuId"">{cce9d2de-98ee-4ce2-8113-222620c64a27}</tm:infoStr><tm:infoStr name=""privateCertificateId"">{38c2c1c2-f73e-4fb2-bb44-d8a52fdcbc51}</tm:infoStr><tm:infoStr name=""applicationId"">{55c92734-d682-4d71-983e-d6ec3f16059f}</tm:infoStr><tm:infoStr name=""productName"">Windows(R), EnterpriseS edition</tm:infoStr><tm:infoStr name=""Family"">EnterpriseS</tm:infoStr><tm:infoStr name=""productAuthor"">Microsoft Corporation</tm:infoStr><tm:infoStr name=""productDescription"">Windows(R) Operating System</tm:infoStr><tm:infoStr name=""clientIssuanceCertificateId"">{4961cc30-d690-43be-910c-8e2db01fc5ad}</tm:infoStr><tm:infoStr name=""hwid:ootGrace"">0</tm:infoStr></tm:infoList></tm:infoTables></r:otherInfo></r:license><r:license xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS"" licenseId=""{38c2c1c2-f73e-4fb2-bb44-d8a52fdcbc51}"" xmlns:sx=""urn:mpeg:mpeg21:2003:01-REL-SX-NS"" xmlns:mx=""urn:mpeg:mpeg21:2003:01-REL-MX-NS"" xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2"" xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><r:title>Windows(R) Publishing License (Private)</r:title><r:grant><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:issue/><r:grant><r:forAll varName=""anyRight""></r:forAll><r:forAll varName=""appid""></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><tm:decryptContent/><tm:symmetricKey><tm:AESKeyValue size=""16"">AAAAAAAAAAAAAAAAAAAAAA==</tm:AESKeyValue></tm:symmetricKey><r:prerequisiteRight><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:right varRef=""anyRight""/><sl:appId varRef=""appid""/><r:trustedRootIssuers><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder></r:trustedRootIssuers></r:prerequisiteRight></r:grant></r:grant><r:issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.microsoft.com/xrml/lwc14n""/><SignatureMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#rsa-sha1""/><Reference><Transforms><Transform Algorithm=""urn:mpeg:mpeg21:2003:01-REL-R-NS:licenseTransform""/><Transform Algorithm=""http://www.microsoft.com/xrml/lwc14n""/></Transforms><DigestMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#sha1""/><DigestValue>hXPflMtQRYrmAY85A44Ewqbfedo=</DigestValue></Reference></SignedInfo><SignatureValue>qOP09nDXmVv1Ne9vEruoSNoV4mzBW371vp1E+uW8jTTC9BqESCaDyK38KhFsxyjz2UqKoelnaFDBTdbVN8VTzJIQCI5sSjMjWzBP31OUHOYDLUGQO7qpRDYwcGRQPsGsQwmNbyTPgq0m4wYcEU4FRj9LIi8B8saMo9xKAO4JNOB/lS8eScHcoUJAdAOoO4MZXfaqZmT90RrMPGPUIY3uTdjtiwL0B46bRdFNYwFuItdHdTUmXOPbXVWogPScSj3JYI9yhdcxjgyb9SxknG0UID9ogTI7HirsfuMvhWkyCSGtV1N4Rr9+c2oiDpWcYeaY4cWcTuSrb+S7vhA10jaJug==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></KeyInfo></Signature><r:details><r:timeOfIssue>2016-01-01T00:00:00Z</r:timeOfIssue></r:details></r:issuer><r:otherInfo xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><tm:infoTables xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><tm:infoList tag=""#global""><tm:infoStr name=""licenseType"">msft:sl/PL/GENERIC/PRIVATE</tm:infoStr><tm:infoStr name=""licenseVersion"">2.0</tm:infoStr><tm:infoStr name=""licensorUrl"">http://licensing.microsoft.com</tm:infoStr><tm:infoStr name=""licenseCategory"">msft:sl/PL/GENERIC/PRIVATE</tm:infoStr><tm:infoStr name=""publicCertificateId"">{add96a1a-5ae7-425d-935d-3b6effd43a92}</tm:infoStr><tm:infoStr name=""clientIssuanceCertificateId"">{4961cc30-d690-43be-910c-8e2db01fc5ad}</tm:infoStr><tm:infoStr name=""hwid:ootGrace"">0</tm:infoStr><tm:infoStr name=""win:branding"">125</tm:infoStr></tm:infoList></tm:infoTables></r:otherInfo></r:license></rg:licenseGroup>";
             if (!pkey.Contains("N"))
@@ -625,6 +514,7 @@ namespace PKeyTools.Model
                 HttpUtility.HtmlEncode(pl_data),
                 GenerateBinding(),
                 pkey,
+                "2009",
                 HttpUtility.HtmlEncode(act_config_id),
                 DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ"),
             DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
@@ -659,7 +549,7 @@ namespace PKeyTools.Model
                 return new ErrorCodeCheckResultModel() { CheckResult = "", ReturnMessage = "向MS激活服务器发送请求时发生异常", Status = false };
             }
         }
-        public static string GetConfigID(string pkey, string configpath)
+        public static string GetConfigID_2009(string pkey, string configpath)
         {
             if (!pkey.Contains("N"))
                 return "";
@@ -679,14 +569,101 @@ namespace PKeyTools.Model
             string act_data = EncodeKeyData(pkey_data.Group, pkey_data.Serial, pkey_data.Security, pkey_data.Upgrade);
             return $"msft2009:{skuid}&{act_data};";
         }
+        public static async Task<ErrorCodeCheckResultModel> ConsumeKey_2005(string pkey, string configpath, string config_ext = "Retail")
+        {
+            string pl_data = @"<?xml version=""1.0"" encoding=""utf-8""?><rg:licenseGroup xmlns:rg=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><r:license xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS"" licenseId=""{add96a1a-5ae7-425d-935d-3b6effd43a92}"" xmlns:sx=""urn:mpeg:mpeg21:2003:01-REL-SX-NS"" xmlns:mx=""urn:mpeg:mpeg21:2003:01-REL-MX-NS"" xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2"" xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><r:title>Windows(R) Publishing License (Public)</r:title><r:grant><r:forAll varName=""productId""><r:anXmlExpression>/sl:productId/sl:pid</r:anXmlExpression></r:forAll><r:forAll varName=""binding""></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:issue/><r:grant><r:forAll varName=""application""><r:anXmlExpression>editionId[@value="""" or @value=""EnterpriseS""]</r:anXmlExpression></r:forAll><r:forAll varName=""appid""><r:propertyPossessor><tm:application varRef=""application""/><r:trustedRootIssuers><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder></r:trustedRootIssuers></r:propertyPossessor></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><sl:runSoftware/><sl:appId varRef=""appid""/><r:allConditions><r:allConditions><sl:productPolicies xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""><sl:priority>500</sl:priority><sl:policyInt name=""Security-SPP-Reserved-Store-Token-Required"" attributes=""override-only"">0</sl:policyInt><sl:policyInt name=""Kernel-NonGenuineNotificationType"" attributes=""override-only"">2</sl:policyInt><sl:policyStr name=""Security-SPP-Reserved-Windows-Version-V2"" attributes=""override-only"">10.0</sl:policyStr><sl:policyInt name=""Security-SPP-WriteWauMarker"">1</sl:policyInt><sl:policyStr name=""Security-SPP-Reserved-Family"" attributes=""override-only"">EnterpriseS</sl:policyStr></sl:productPolicies><sl:proxyExecutionKey xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""></sl:proxyExecutionKey><sl:externalValidator xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""><sl:type>msft:sl/externalValidator/generic</sl:type><sl:data Algorithm=""msft:rm/algorithm/flags/1.0"">DAAAAAEAAAAFAAAA</sl:data></sl:externalValidator></r:allConditions><mx:renderer><sl:binding varRef=""binding""/><sl:productId varRef=""productId""/></mx:renderer></r:allConditions></r:grant><r:allConditions><sl:businessRules xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""></sl:businessRules></r:allConditions></r:grant><r:issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.microsoft.com/xrml/lwc14n""/><SignatureMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#rsa-sha1""/><Reference><Transforms><Transform Algorithm=""urn:mpeg:mpeg21:2003:01-REL-R-NS:licenseTransform""/><Transform Algorithm=""http://www.microsoft.com/xrml/lwc14n""/></Transforms><DigestMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#sha1""/><DigestValue>ivMENCvkqJvb41ZNgue9GpfjWDI=</DigestValue></Reference></SignedInfo><SignatureValue>exwwz6jLpaJ0u1KEEDOCFDXwUAEwI8jUpcamyUkFyqbuYBVCinoihNCtgZAvXcQ+N35MNSXLKXlXpttYE0M2O8dZWR/Frxt38RWxCQj/4heGIwPqQJ7KUZtOdBvytjA6XSvv6uqq1aNAaSWyb7l7jkXc14ycfvxILMVqYdmkIw6BQNZ8/R/anl4VQjAeBdg/+DrcxoHvVT1pVe5PJkrPFRi2B7+0P0oWBljataVjwqDnxYfcJq7lkErHsl78sH2rWPOP/carliYgFNTyEc8437MN5xkNJmeQpsAyTpfE+H7r74WXsk59aU7NoUxteOBRzUNZCgCp2Trr09awd5k2Pg==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></KeyInfo></Signature><r:details><r:timeOfIssue>2016-01-01T00:00:00Z</r:timeOfIssue></r:details></r:issuer><r:otherInfo xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><tm:infoTables xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><tm:infoList tag=""#global""><tm:infoStr name=""licenseType"">msft:sl/PL/GENERIC/PUBLIC</tm:infoStr><tm:infoStr name=""licenseVersion"">2.0</tm:infoStr><tm:infoStr name=""licensorUrl"">http://licensing.microsoft.com</tm:infoStr><tm:infoStr name=""licenseCategory"">msft:sl/PL/GENERIC/PUBLIC</tm:infoStr><tm:infoStr name=""productSkuId"">{cce9d2de-98ee-4ce2-8113-222620c64a27}</tm:infoStr><tm:infoStr name=""privateCertificateId"">{38c2c1c2-f73e-4fb2-bb44-d8a52fdcbc51}</tm:infoStr><tm:infoStr name=""applicationId"">{55c92734-d682-4d71-983e-d6ec3f16059f}</tm:infoStr><tm:infoStr name=""productName"">Windows(R), EnterpriseS edition</tm:infoStr><tm:infoStr name=""Family"">EnterpriseS</tm:infoStr><tm:infoStr name=""productAuthor"">Microsoft Corporation</tm:infoStr><tm:infoStr name=""productDescription"">Windows(R) Operating System</tm:infoStr><tm:infoStr name=""clientIssuanceCertificateId"">{4961cc30-d690-43be-910c-8e2db01fc5ad}</tm:infoStr><tm:infoStr name=""hwid:ootGrace"">0</tm:infoStr></tm:infoList></tm:infoTables></r:otherInfo></r:license><r:license xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS"" licenseId=""{38c2c1c2-f73e-4fb2-bb44-d8a52fdcbc51}"" xmlns:sx=""urn:mpeg:mpeg21:2003:01-REL-SX-NS"" xmlns:mx=""urn:mpeg:mpeg21:2003:01-REL-MX-NS"" xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2"" xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><r:title>Windows(R) Publishing License (Private)</r:title><r:grant><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:issue/><r:grant><r:forAll varName=""anyRight""></r:forAll><r:forAll varName=""appid""></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><tm:decryptContent/><tm:symmetricKey><tm:AESKeyValue size=""16"">AAAAAAAAAAAAAAAAAAAAAA==</tm:AESKeyValue></tm:symmetricKey><r:prerequisiteRight><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:right varRef=""anyRight""/><sl:appId varRef=""appid""/><r:trustedRootIssuers><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder></r:trustedRootIssuers></r:prerequisiteRight></r:grant></r:grant><r:issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.microsoft.com/xrml/lwc14n""/><SignatureMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#rsa-sha1""/><Reference><Transforms><Transform Algorithm=""urn:mpeg:mpeg21:2003:01-REL-R-NS:licenseTransform""/><Transform Algorithm=""http://www.microsoft.com/xrml/lwc14n""/></Transforms><DigestMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#sha1""/><DigestValue>hXPflMtQRYrmAY85A44Ewqbfedo=</DigestValue></Reference></SignedInfo><SignatureValue>qOP09nDXmVv1Ne9vEruoSNoV4mzBW371vp1E+uW8jTTC9BqESCaDyK38KhFsxyjz2UqKoelnaFDBTdbVN8VTzJIQCI5sSjMjWzBP31OUHOYDLUGQO7qpRDYwcGRQPsGsQwmNbyTPgq0m4wYcEU4FRj9LIi8B8saMo9xKAO4JNOB/lS8eScHcoUJAdAOoO4MZXfaqZmT90RrMPGPUIY3uTdjtiwL0B46bRdFNYwFuItdHdTUmXOPbXVWogPScSj3JYI9yhdcxjgyb9SxknG0UID9ogTI7HirsfuMvhWkyCSGtV1N4Rr9+c2oiDpWcYeaY4cWcTuSrb+S7vhA10jaJug==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></KeyInfo></Signature><r:details><r:timeOfIssue>2016-01-01T00:00:00Z</r:timeOfIssue></r:details></r:issuer><r:otherInfo xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><tm:infoTables xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><tm:infoList tag=""#global""><tm:infoStr name=""licenseType"">msft:sl/PL/GENERIC/PRIVATE</tm:infoStr><tm:infoStr name=""licenseVersion"">2.0</tm:infoStr><tm:infoStr name=""licensorUrl"">http://licensing.microsoft.com</tm:infoStr><tm:infoStr name=""licenseCategory"">msft:sl/PL/GENERIC/PRIVATE</tm:infoStr><tm:infoStr name=""publicCertificateId"">{add96a1a-5ae7-425d-935d-3b6effd43a92}</tm:infoStr><tm:infoStr name=""clientIssuanceCertificateId"">{4961cc30-d690-43be-910c-8e2db01fc5ad}</tm:infoStr><tm:infoStr name=""hwid:ootGrace"">0</tm:infoStr><tm:infoStr name=""win:branding"">125</tm:infoStr></tm:infoList></tm:infoTables></r:otherInfo></r:license></rg:licenseGroup>";
+            /*
+                if (!pkey.Contains("N"))
+                   return new ErrorCodeCheckResultModel() { CheckResult="", ReturnMessage="不支持检测该版本密钥的错误代码", Status=false };
+
+               ProductKeyDecoder pkey_data = new ProductKeyDecoder(pkey);
+               string skuid;
+               PKeyConfig pkc = new PKeyConfig(XElement.Parse(File.ReadAllText(configpath)));
+               try
+               {
+                   var readDetail = pkc.ConfigForGroup(pkey_data.Group);
+                   skuid = readDetail.ConfigId.Substring(1, readDetail.ConfigId.Length - 2);
+               }
+               catch
+               {
+                   return new ErrorCodeCheckResultModel() { CheckResult = "", ReturnMessage = "内部错误：证书", Status = false };
+               }
+               string act_data = EncodeKeyData(pkey_data.Group, pkey_data.Serial, pkey_data.Security, pkey_data.Upgrade);
+               string act_config_id = $"msft2009:{skuid}&{act_data};";
+             */
+            string licAlg = "2009";
+            string act_config_id = ProductHook.MainCheckFunc(pkey, configpath,targetHookDLL);
+            if (string.IsNullOrWhiteSpace(act_config_id))
+                return new ErrorCodeCheckResultModel() { CheckResult="", ReturnMessage="不支持检测该版本密钥的错误代码", Status=false };
+            if (act_config_id.Contains("msft2005"))
+            {
+                licAlg="2005";
+            }
+            string payload = string.Format(ATO_REQ_TEMPLATE,
+                HttpUtility.HtmlEncode(pl_data),
+                GenerateBinding(),
+                pkey,
+                licAlg,
+                HttpUtility.HtmlEncode(act_config_id),
+                DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+            DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                Guid.NewGuid().ToString()
+            );
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var content = new StringContent(payload, Encoding.UTF8, "text/xml");
+                    content.Headers.Add("SOAPAction", "http://microsoft.com/SL/ProductActivationService/IssueToken");
+                    client.DefaultRequestHeaders.Add("Accept", "text/*");
+                    client.DefaultRequestHeaders.Add("User-Agent", "SLSSoapClient");
+                    var resp = await client.PostAsync($"https://activation.sls.microsoft.com/SLActivateProduct/SLActivateProduct.asmx?configextension={config_ext}", content);
+                    string respText = await resp.Content.ReadAsStringAsync();
+                    XElement data = XElement.Parse(respText);
+
+                    var fault = data.Descendants().FirstOrDefault(e => e.Name.LocalName == "Fault");
+                    if (fault == null)
+                        return new ErrorCodeCheckResultModel() { CheckResult = "Online Key", ReturnMessage = "Online Key", Status = true, ConfigId=act_config_id };
+                    else
+                    {
+                        var hresult = fault.Descendants().FirstOrDefault(e => e.Name.LocalName == "HRESULT")?.Value;
+                        var message = fault.Descendants().FirstOrDefault(e => e.Name.LocalName == "Message")?.Value;
+                        return new ErrorCodeCheckResultModel() { CheckResult = hresult, ReturnMessage =message, Status = false, ConfigId=act_config_id };
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return new ErrorCodeCheckResultModel() { CheckResult = "", ReturnMessage = "向MS激活服务器发送请求时发生异常", Status = false };
+            }
+        }
+        public static string GetConfigID_2005(string pkey, string configpath)
+        {
+            try
+            {
+                return ProductHook.MainCheckFunc(pkey, configpath,targetHookDLL);
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
         public static async Task<ErrorCodeCheckResultModel> ConsumeKeyWithID(string pkey, string act_config_id, string config_ext = "Retail")
         {
             string pl_data = @"<?xml version=""1.0"" encoding=""utf-8""?><rg:licenseGroup xmlns:rg=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><r:license xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS"" licenseId=""{add96a1a-5ae7-425d-935d-3b6effd43a92}"" xmlns:sx=""urn:mpeg:mpeg21:2003:01-REL-SX-NS"" xmlns:mx=""urn:mpeg:mpeg21:2003:01-REL-MX-NS"" xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2"" xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><r:title>Windows(R) Publishing License (Public)</r:title><r:grant><r:forAll varName=""productId""><r:anXmlExpression>/sl:productId/sl:pid</r:anXmlExpression></r:forAll><r:forAll varName=""binding""></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:issue/><r:grant><r:forAll varName=""application""><r:anXmlExpression>editionId[@value="""" or @value=""EnterpriseS""]</r:anXmlExpression></r:forAll><r:forAll varName=""appid""><r:propertyPossessor><tm:application varRef=""application""/><r:trustedRootIssuers><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder></r:trustedRootIssuers></r:propertyPossessor></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><sl:runSoftware/><sl:appId varRef=""appid""/><r:allConditions><r:allConditions><sl:productPolicies xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""><sl:priority>500</sl:priority><sl:policyInt name=""Security-SPP-Reserved-Store-Token-Required"" attributes=""override-only"">0</sl:policyInt><sl:policyInt name=""Kernel-NonGenuineNotificationType"" attributes=""override-only"">2</sl:policyInt><sl:policyStr name=""Security-SPP-Reserved-Windows-Version-V2"" attributes=""override-only"">10.0</sl:policyStr><sl:policyInt name=""Security-SPP-WriteWauMarker"">1</sl:policyInt><sl:policyStr name=""Security-SPP-Reserved-Family"" attributes=""override-only"">EnterpriseS</sl:policyStr></sl:productPolicies><sl:proxyExecutionKey xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""></sl:proxyExecutionKey><sl:externalValidator xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""><sl:type>msft:sl/externalValidator/generic</sl:type><sl:data Algorithm=""msft:rm/algorithm/flags/1.0"">DAAAAAEAAAAFAAAA</sl:data></sl:externalValidator></r:allConditions><mx:renderer><sl:binding varRef=""binding""/><sl:productId varRef=""productId""/></mx:renderer></r:allConditions></r:grant><r:allConditions><sl:businessRules xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2""></sl:businessRules></r:allConditions></r:grant><r:issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.microsoft.com/xrml/lwc14n""/><SignatureMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#rsa-sha1""/><Reference><Transforms><Transform Algorithm=""urn:mpeg:mpeg21:2003:01-REL-R-NS:licenseTransform""/><Transform Algorithm=""http://www.microsoft.com/xrml/lwc14n""/></Transforms><DigestMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#sha1""/><DigestValue>ivMENCvkqJvb41ZNgue9GpfjWDI=</DigestValue></Reference></SignedInfo><SignatureValue>exwwz6jLpaJ0u1KEEDOCFDXwUAEwI8jUpcamyUkFyqbuYBVCinoihNCtgZAvXcQ+N35MNSXLKXlXpttYE0M2O8dZWR/Frxt38RWxCQj/4heGIwPqQJ7KUZtOdBvytjA6XSvv6uqq1aNAaSWyb7l7jkXc14ycfvxILMVqYdmkIw6BQNZ8/R/anl4VQjAeBdg/+DrcxoHvVT1pVe5PJkrPFRi2B7+0P0oWBljataVjwqDnxYfcJq7lkErHsl78sH2rWPOP/carliYgFNTyEc8437MN5xkNJmeQpsAyTpfE+H7r74WXsk59aU7NoUxteOBRzUNZCgCp2Trr09awd5k2Pg==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></KeyInfo></Signature><r:details><r:timeOfIssue>2016-01-01T00:00:00Z</r:timeOfIssue></r:details></r:issuer><r:otherInfo xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><tm:infoTables xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><tm:infoList tag=""#global""><tm:infoStr name=""licenseType"">msft:sl/PL/GENERIC/PUBLIC</tm:infoStr><tm:infoStr name=""licenseVersion"">2.0</tm:infoStr><tm:infoStr name=""licensorUrl"">http://licensing.microsoft.com</tm:infoStr><tm:infoStr name=""licenseCategory"">msft:sl/PL/GENERIC/PUBLIC</tm:infoStr><tm:infoStr name=""productSkuId"">{cce9d2de-98ee-4ce2-8113-222620c64a27}</tm:infoStr><tm:infoStr name=""privateCertificateId"">{38c2c1c2-f73e-4fb2-bb44-d8a52fdcbc51}</tm:infoStr><tm:infoStr name=""applicationId"">{55c92734-d682-4d71-983e-d6ec3f16059f}</tm:infoStr><tm:infoStr name=""productName"">Windows(R), EnterpriseS edition</tm:infoStr><tm:infoStr name=""Family"">EnterpriseS</tm:infoStr><tm:infoStr name=""productAuthor"">Microsoft Corporation</tm:infoStr><tm:infoStr name=""productDescription"">Windows(R) Operating System</tm:infoStr><tm:infoStr name=""clientIssuanceCertificateId"">{4961cc30-d690-43be-910c-8e2db01fc5ad}</tm:infoStr><tm:infoStr name=""hwid:ootGrace"">0</tm:infoStr></tm:infoList></tm:infoTables></r:otherInfo></r:license><r:license xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS"" licenseId=""{38c2c1c2-f73e-4fb2-bb44-d8a52fdcbc51}"" xmlns:sx=""urn:mpeg:mpeg21:2003:01-REL-SX-NS"" xmlns:mx=""urn:mpeg:mpeg21:2003:01-REL-MX-NS"" xmlns:sl=""http://www.microsoft.com/DRM/XrML2/SL/v2"" xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><r:title>Windows(R) Publishing License (Private)</r:title><r:grant><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:issue/><r:grant><r:forAll varName=""anyRight""></r:forAll><r:forAll varName=""appid""></r:forAll><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><tm:decryptContent/><tm:symmetricKey><tm:AESKeyValue size=""16"">AAAAAAAAAAAAAAAAAAAAAA==</tm:AESKeyValue></tm:symmetricKey><r:prerequisiteRight><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>17FgQIuX2S7YIVn8PIeN+qANo4/TUbV8CH5TzbXwmWo4WVI4npVqI4NNhRVsP0ICgMpql1jgAm75dZDBPTzRTCj+Ni0DXIvk6Whlo/ClK/fpZUO3ORQ9VmBE3cXeQQAehgVlUUIzOmG4EeP1i91PCGf5O7I4ayYS2FeQUj+6hyk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder><r:right varRef=""anyRight""/><sl:appId varRef=""appid""/><r:trustedRootIssuers><r:keyHolder><r:info><KeyValue xmlns=""http://www.w3.org/2000/09/xmldsig#""><RSAKeyValue><Modulus>v0JgOuEWuaA3INoAK10wY7PLaEhyfjfL5A2joNwBR/3ziJxewXKy5QDzZvD3C9eVdvlSqFCDpZEDUxVWvFFeYKI5YkTeK5x7X4nQPodwZAoTJklTUWpfZNslLYJVMaxRvs8htxKoIbvmssqN4Dhy3Oa7HT80GcOvS95M7UCvXcQ7TjrQUV9QNb0w6WLdMVpuktek1CVi4XQ3ELIHZJhyKAtWNGRN4kxZL9nYyDvZ8be5rlGTuhEsgi1oFqnjzMLYXU4wkF/W8mRedIkvoBu3kCjuwEqsr9P5sIbHowqFX5sRxmTrgwoCXPCtFyXCwu9hO75mvb1I1sCuv8W0gTfMtw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></r:info></r:keyHolder></r:trustedRootIssuers></r:prerequisiteRight></r:grant></r:grant><r:issuer><Signature xmlns=""http://www.w3.org/2000/09/xmldsig#""><SignedInfo><CanonicalizationMethod Algorithm=""http://www.microsoft.com/xrml/lwc14n""/><SignatureMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#rsa-sha1""/><Reference><Transforms><Transform Algorithm=""urn:mpeg:mpeg21:2003:01-REL-R-NS:licenseTransform""/><Transform Algorithm=""http://www.microsoft.com/xrml/lwc14n""/></Transforms><DigestMethod Algorithm=""http://www.w3.org/2000/09/xmldsig#sha1""/><DigestValue>hXPflMtQRYrmAY85A44Ewqbfedo=</DigestValue></Reference></SignedInfo><SignatureValue>qOP09nDXmVv1Ne9vEruoSNoV4mzBW371vp1E+uW8jTTC9BqESCaDyK38KhFsxyjz2UqKoelnaFDBTdbVN8VTzJIQCI5sSjMjWzBP31OUHOYDLUGQO7qpRDYwcGRQPsGsQwmNbyTPgq0m4wYcEU4FRj9LIi8B8saMo9xKAO4JNOB/lS8eScHcoUJAdAOoO4MZXfaqZmT90RrMPGPUIY3uTdjtiwL0B46bRdFNYwFuItdHdTUmXOPbXVWogPScSj3JYI9yhdcxjgyb9SxknG0UID9ogTI7HirsfuMvhWkyCSGtV1N4Rr9+c2oiDpWcYeaY4cWcTuSrb+S7vhA10jaJug==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>tajcnLtdaeK0abuL2BpVC7obdfSChnHAx7TSn/37DwbTDegkDkEnbr0YyO/Q5Jluj5QD897+nWW54RDbYYTdNgWjyUpwYEJFXSZtd8LFK2mbIjKfG2HIShp6JJARlrgObR89a1EH716nP3PbJk6PWQa6VfjBzPQUgSVywIRU+OKbnzNbUVmQ/rAN6+AN/8fRmFhyKqOAiV/Np2jBtGNxLXm9ebMdm5cB8/YNrjp5Ey0nyAtYvovb0B7wnQZfolMF+OFiqzWJo2Ze0O7WHsWBHtIlGR3+c/IjxUJAsI7O3U4hncCZdvlC5GORI2YL9YHZgU9guSPLhAybQ3IGg7LBuQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></KeyInfo></Signature><r:details><r:timeOfIssue>2016-01-01T00:00:00Z</r:timeOfIssue></r:details></r:issuer><r:otherInfo xmlns:r=""urn:mpeg:mpeg21:2003:01-REL-R-NS""><tm:infoTables xmlns:tm=""http://www.microsoft.com/DRM/XrML2/TM/v2""><tm:infoList tag=""#global""><tm:infoStr name=""licenseType"">msft:sl/PL/GENERIC/PRIVATE</tm:infoStr><tm:infoStr name=""licenseVersion"">2.0</tm:infoStr><tm:infoStr name=""licensorUrl"">http://licensing.microsoft.com</tm:infoStr><tm:infoStr name=""licenseCategory"">msft:sl/PL/GENERIC/PRIVATE</tm:infoStr><tm:infoStr name=""publicCertificateId"">{add96a1a-5ae7-425d-935d-3b6effd43a92}</tm:infoStr><tm:infoStr name=""clientIssuanceCertificateId"">{4961cc30-d690-43be-910c-8e2db01fc5ad}</tm:infoStr><tm:infoStr name=""hwid:ootGrace"">0</tm:infoStr><tm:infoStr name=""win:branding"">125</tm:infoStr></tm:infoList></tm:infoTables></r:otherInfo></r:license></rg:licenseGroup>";
+
+            string licAlg = "2009";
+            if (act_config_id.Contains("msft2005"))
+            {
+                licAlg="2005";
+            }
 
             string payload = string.Format(ATO_REQ_TEMPLATE,
                 HttpUtility.HtmlEncode(pl_data),
                 GenerateBinding(),
                 pkey,
+                licAlg,
                 HttpUtility.HtmlEncode(act_config_id),
                 DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ"),
             DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"),
@@ -721,47 +698,49 @@ namespace PKeyTools.Model
                 return new ErrorCodeCheckResultModel() { CheckResult = "", ReturnMessage = "向MS激活服务器发送请求时发生异常", Status = false };
             }
         }
-        public static async Task<(string, string, bool)> QueryKey(string pkey, string configpath)
-        {
-            if (!pkey.Contains("N"))
-                return ("N/A", "Product key is not PKEY2009.", false);
-
-            dynamic pkey_data = new ProductKeyDecoder(pkey);
-            string skuid;
-            PKeyConfig pkc = new PKeyConfig(XElement.Parse(File.ReadAllText(configpath)));
-            try
-            {
-                skuid = pkc.ConfigForGroup(pkey_data.Group).ConfigId.Substring(1, pkc.ConfigForGroup(pkey_data.Group).ConfigId.Length - 2);
-            }
-            catch
-            {
-                return ("N/A", "Product key not compatible with provided pkeyconfig", false);
-            }
-            string act_data = EncodeKeyData(pkey_data.Group, pkey_data.Serial, pkey_data.Security, pkey_data.Upgrade);
-            string act_config_id = $"msft2009:{skuid}&{act_data};";
-
-            string payload = string.Format(PKC_REQ_TEMPLATE, pkey, HttpUtility.HtmlEncode(act_config_id));
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(payload, Encoding.UTF8, "text/xml");
-                content.Headers.Add("SOAPAction", "http://microsoft.com/SL/ProductCertificationService/IssueToken");
-                client.DefaultRequestHeaders.Add("Accept", "text/*");
-                client.DefaultRequestHeaders.Add("User-Agent", "SLSSoapClient");
-                var resp = await client.PostAsync("https://activation.sls.microsoft.com/slpkc/SLCertifyProduct.asmx", content);
-                string respText = await resp.Content.ReadAsStringAsync();
-                XElement data = XElement.Parse(respText);
-
-                var fault = data.Descendants().FirstOrDefault(e => e.Name.LocalName == "Fault");
-                if (fault == null)
-                    return ("0x0", "", true);
-                else
+        /*
+                 public static async Task<(string, string, bool)> QueryKey(string pkey, string configpath)
                 {
-                    var hresult = fault.Descendants().FirstOrDefault(e => e.Name.LocalName == "HRESULT")?.Value;
-                    var message = fault.Descendants().FirstOrDefault(e => e.Name.LocalName == "Message")?.Value;
-                    return (hresult, message, false);
+                    if (!pkey.Contains("N"))
+                        return ("N/A", "Product key is not PKEY2009.", false);
+
+                    dynamic pkey_data = new ProductKeyDecoder(pkey);
+                    string skuid;
+                    PKeyConfig pkc = new PKeyConfig(XElement.Parse(File.ReadAllText(configpath)));
+                    try
+                    {
+                        skuid = pkc.ConfigForGroup(pkey_data.Group).ConfigId.Substring(1, pkc.ConfigForGroup(pkey_data.Group).ConfigId.Length - 2);
+                    }
+                    catch
+                    {
+                        return ("N/A", "Product key not compatible with provided pkeyconfig", false);
+                    }
+                    string act_data = EncodeKeyData(pkey_data.Group, pkey_data.Serial, pkey_data.Security, pkey_data.Upgrade);
+                    string act_config_id = $"msft2009:{skuid}&{act_data};";
+
+                    string payload = string.Format(PKC_REQ_TEMPLATE, pkey, HttpUtility.HtmlEncode(act_config_id));
+                    using (var client = new HttpClient())
+                    {
+                        var content = new StringContent(payload, Encoding.UTF8, "text/xml");
+                        content.Headers.Add("SOAPAction", "http://microsoft.com/SL/ProductCertificationService/IssueToken");
+                        client.DefaultRequestHeaders.Add("Accept", "text/*");
+                        client.DefaultRequestHeaders.Add("User-Agent", "SLSSoapClient");
+                        var resp = await client.PostAsync("https://activation.sls.microsoft.com/slpkc/SLCertifyProduct.asmx", content);
+                        string respText = await resp.Content.ReadAsStringAsync();
+                        XElement data = XElement.Parse(respText);
+
+                        var fault = data.Descendants().FirstOrDefault(e => e.Name.LocalName == "Fault");
+                        if (fault == null)
+                            return ("0x0", "", true);
+                        else
+                        {
+                            var hresult = fault.Descendants().FirstOrDefault(e => e.Name.LocalName == "HRESULT")?.Value;
+                            var message = fault.Descendants().FirstOrDefault(e => e.Name.LocalName == "Message")?.Value;
+                            return (hresult, message, false);
+                        }
+                    }
                 }
-            }
-        }
+         */
         public static string GenerateBinding()
         {
             // 固定前缀

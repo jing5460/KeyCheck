@@ -450,11 +450,11 @@ namespace PKeyTools.Model
                                 {
                                     checkResult.ActiveCount = KeyCheckFunModel.GetCount(KeyCheckFunModel.GetStringFromID(npid, 0x0008));
                                     //如果只获取OEM密钥的计数，就不会有ConfigID，这里手动获取一下
-                                    checkResult.ConfigID=  eccheckresult.ConfigId=GetConfigID(ProductKey, PKeyPath);
+                                    checkResult.ConfigID=ProductKey.Contains("N") ? GetConfigID_2009(ProductKey, PKeyPath) : GetConfigID_2005(ProductKey, PKeyPath);
                                 }
                                 else
                                 {
-                                    eccheckresult = await ConsumeKey(ProductKey, PKeyPath);
+                                    eccheckresult = ProductKey.Contains("N") ? await ConsumeKey_2009(ProductKey, PKeyPath) : await ConsumeKey_2005(ProductKey, PKeyPath);
                                     checkResult.ActiveCount =eccheckresult.CheckResult=="" ? "---" : eccheckresult.CheckResult;
                                 }
                             }
@@ -462,14 +462,14 @@ namespace PKeyTools.Model
                             {
                                 if (CheckMAKErrorCode==1&&checkResult.LicenseType.Contains("MAK"))
                                 {
-                                    eccheckresult = await ConsumeKey(ProductKey, PKeyPath);
+                                    eccheckresult = ProductKey.Contains("N") ? await ConsumeKey_2009(ProductKey, PKeyPath) : await ConsumeKey_2005(ProductKey, PKeyPath);
                                     checkResult.ActiveCount =eccheckresult.CheckResult=="" ? "---" : eccheckresult.CheckResult;
                                 }
                                 else
                                 {
                                     checkResult.ActiveCount = KeyCheckFunModel.GetCount(KeyCheckFunModel.GetStringFromID(npid, 0x0008));
                                     //批量密钥默认不检测错误代码，所以不会有ConfigID，这里手动获取一下
-                                    checkResult.ConfigID=  eccheckresult.ConfigId=GetConfigID(ProductKey, PKeyPath);
+                                    checkResult.ConfigID=ProductKey.Contains("N") ? GetConfigID_2009(ProductKey, PKeyPath) : GetConfigID_2005(ProductKey, PKeyPath);
                                 }
 
                             }
